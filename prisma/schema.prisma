@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleUtilisateur {
+  PATRON
+  VENDEUR
+}
+
+enum TypeMouvement {
+  ACHAT
+  VENTE
+  TRANSFERT
+}
+
+model Utilisateur {
+  id              String            @id @default(uuid())
+  nom             String
+  email           String            @unique
+  mot_de_passe    String
+  role            RoleUtilisateur   @default(VENDEUR)
+  
+  // Relation optionnelle pour lier un vendeur à une boutique
+  stock_id        String?
+  stock           Stock?            @relation(fields: [stock_id], references: [id])
+  
+  // Historique des mouvements enregistrés par cet utilisateur
+  mouvements_enregistres MouvementStock[]
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model Categorie {
+  id              String            @id @default(uuid())
+  nom             String
+  description     String?
+  produits        Produit[]
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model Produit {
+  id                String          @id @default(uuid())
+  nom               String
+  code_barre        String?         @unique
+  
+  categorie_id      String
+  categorie         Categorie       @relation(fields: [categorie_id], references: [id])
+  
+  prix_achat_detail Float
+  prix_achat_gros   Float
+  prix_vente_detail Float
+  prix_vente_gros   Float
+  
+  mouvements        MouvementStock[]
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+model Stock {
+  id                String          @id @default(uuid())
+  nom               String          // ex: "Stock Central", "Boutique A", "Fournisseur X", "Client Y"
+  adresse           String?
+  est_externe       Boolean         @default(false) // Permet de distinguer les vrais stocks internes des Fournisseurs/Clients
+  
+  // Relation réflexive : un stock peut avoir un stock parent (le stock principal)
+  stock_parent_id   String?
+  stock_parent      Stock?          @relation("StockHierarchy", fields: [stock_parent_id], references: [id])
+  stocks_enfants    Stock[]         @relation("StockHierarchy")
+  
+  vendeurs          Utilisateur[]
+  
+  // Relations avec les mouvements de stock
+  mouvements_sortants MouvementStock[] @relation("SourceStock")
+  mouvements_entrants MouvementStock[] @relation("DestinationStock")
+  
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}
+
+model MouvementStock {
+  id                    String          @id @default(uuid())
+  type                  TypeMouvement
+  
+  produit_id            String
+  produit               Produit         @relation(fields: [produit_id], references: [id])
+  
+  stock_source_id       String
+  stock_source          Stock           @relation("SourceStock", fields: [stock_source_id], references: [id])
+  
+  stock_destination_id  String
+  stock_destination     Stock           @relation("DestinationStock", fields: [stock_destination_id], references: [id])
+  
+  quantite              Int
+  prix_unitaire_applique Float          // Prix au moment de la transaction
+  
+  utilisateur_id        String
+  utilisateur           Utilisateur     @relation(fields: [utilisateur_id], references: [id])
+  
+  date_mouvement        DateTime        @default(now())
+}
