@@ -21,6 +21,11 @@ model Etablissement {
   stocks          Stock[]
   mouvements      MouvementStock[]
   
+  clients         Client[]
+  fournisseurs    Fournisseur[]
+  commandes       Commande[]
+  depenses        Depense[]
+  
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 }
@@ -43,6 +48,8 @@ model Utilisateur {
   stock           Stock?            @relation(fields: [stock_id], references: [id])
   
   mouvements_enregistres MouvementStock[]
+  commandes_vendeur      Commande[]      @relation("VendeurCommande")
+  depenses_enregistrees  Depense[]       @relation("UtilisateurDepense")
   
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
@@ -73,12 +80,13 @@ model Produit {
   categorie_id      String
   categorie         Categorie       @relation(fields: [categorie_id], references: [id])
   
-  prix_achat_detail Float
-  prix_achat_gros   Float
-  prix_vente_detail Float
-  prix_vente_gros   Float
+  prix_achat_detail Int
+  prix_achat_gros   Int
+  prix_vente_detail Int
+  prix_vente_gros   Int
   
   mouvements        MouvementStock[]
+  lignes_commande   LigneCommande[]
   
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
@@ -105,13 +113,15 @@ model Stock {
   mouvements_sortants MouvementStock[] @relation("SourceStock")
   mouvements_entrants MouvementStock[] @relation("DestinationStock")
   
+  commandes_recues  Commande[]       @relation("StockCommandeDestination")
+  
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
 }
 
 model MouvementStock {
   id                    String          @id @default(uuid())
-  type                  String
+  type                  String          // Gardé pour rétrocompatibilité
   
   etablissement_id      String
   etablissement         Etablissement   @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
@@ -119,17 +129,103 @@ model MouvementStock {
   produit_id            String
   produit               Produit         @relation(fields: [produit_id], references: [id])
   
-  stock_source_id       String
-  stock_source          Stock           @relation("SourceStock", fields: [stock_source_id], references: [id])
+  stock_source_id       String?
+  stock_source          Stock?          @relation("SourceStock", fields: [stock_source_id], references: [id])
   
-  stock_destination_id  String
-  stock_destination     Stock           @relation("DestinationStock", fields: [stock_destination_id], references: [id])
+  stock_destination_id  String?
+  stock_destination     Stock?          @relation("DestinationStock", fields: [stock_destination_id], references: [id])
   
   quantite              Int
-  prix_unitaire_applique Float
+  prix_unitaire_applique Int
   
   utilisateur_id        String
   utilisateur           Utilisateur     @relation(fields: [utilisateur_id], references: [id])
   
   date_mouvement        DateTime        @default(now())
+}
+
+model Client {
+  id              String      @id @default(uuid())
+  nom             String
+  telephone       String?
+  adresse         String?
+  
+  etablissement_id String
+  etablissement   Etablissement @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
+  
+  commandes       Commande[]
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Fournisseur {
+  id              String      @id @default(uuid())
+  nom             String
+  telephone       String?
+  adresse         String?
+  
+  etablissement_id String
+  etablissement   Etablissement @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Commande {
+  id              String      @id @default(uuid())
+  numero_facture  String      @unique
+  type_vente      String      // GROS, DETAIL, TRANSFERT_INTERNE
+  statut_paiement String      // PAYE, PARTIEL, NON_PAYE
+  montant_total   Int
+  montant_paye    Int         @default(0)
+  
+  etablissement_id String
+  etablissement   Etablissement @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
+  
+  client_id       String?
+  client          Client?     @relation(fields: [client_id], references: [id])
+  
+  // Le stock qui a servi à vendre
+  stock_source_id String?
+  
+  // Si transfert interne, vers quel stock
+  stock_destination_id String?
+  stock_destination    Stock? @relation("StockCommandeDestination", fields: [stock_destination_id], references: [id])
+
+  vendeur_id      String
+  vendeur         Utilisateur @relation("VendeurCommande", fields: [vendeur_id], references: [id])
+  
+  lignes          LigneCommande[]
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model LigneCommande {
+  id              String      @id @default(uuid())
+  
+  commande_id     String
+  commande        Commande    @relation(fields: [commande_id], references: [id], onDelete: Cascade)
+  
+  produit_id      String
+  produit         Produit     @relation(fields: [produit_id], references: [id])
+  
+  quantite        Int
+  prix_unitaire   Int         // Prix vendu
+  prix_achat_unitaire Int     // Prix d'achat à l'instant T pour calculer le bénéfice
+}
+
+model Depense {
+  id              String      @id @default(uuid())
+  motif           String      // Salaire, Transport, Facture...
+  description     String?
+  montant         Int
+  date_depense    DateTime    @default(now())
+  
+  etablissement_id String
+  etablissement   Etablissement @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
+  
+  enregistre_par_id String
+  enregistre_par  Utilisateur @relation("UtilisateurDepense", fields: [enregistre_par_id], references: [id])
 }
