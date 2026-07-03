@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { toggleEtablissementStatus, renewEtablissement, impersonateEtablissement, upgradeToPro } from "./actions";
+import { toggleEtablissementStatus, renewEtablissement, impersonateEtablissement, upgradeToPro, deleteEtablissement } from "./actions";
 
 export default function EtablissementActionsClient({ 
   id, 
@@ -47,6 +47,17 @@ export default function EtablissementActionsClient({
     }
   }
 
+  async function handleDelete() {
+    if (confirm("Êtes-vous sûr de vouloir supprimer cet établissement DÉFINITIVEMENT ? Toutes ses données (utilisateurs, produits, ventes) seront effacées.")) {
+      setLoading(true);
+      const result = await deleteEtablissement(id);
+      if (result?.error) {
+        alert(result.error);
+        setLoading(false);
+      }
+    }
+  }
+
   return (
     <div className="flex justify-end gap-2 items-center flex-wrap">
       {plan_actuel === "Standard" && (
@@ -85,6 +96,14 @@ export default function EtablissementActionsClient({
         className="px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 border border-blue-200 rounded-lg text-xs font-semibold transition-colors disabled:opacity-50"
       >
         Renouveler 1 an
+      </button>
+
+      <button 
+        onClick={handleDelete}
+        disabled={loading}
+        className="px-3 py-1.5 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 shadow-sm"
+      >
+        Supprimer
       </button>
     </div>
   );

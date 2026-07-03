@@ -139,3 +139,22 @@ export async function upgradeToPro(id: string) {
     return { error: "Impossible de passer en Pro." };
   }
 }
+
+export async function deleteEtablissement(id: string) {
+  try {
+    const currentSession = await getSession();
+    if (!currentSession || currentSession.role !== "SUPER_ADMIN") {
+      return { error: "Accès refusé" };
+    }
+
+    await prisma.etablissement.delete({
+      where: { id }
+    });
+
+    revalidatePath("/super-admin/etablissements");
+    return { success: true };
+  } catch (error) {
+    console.error("Erreur suppression:", error);
+    return { error: "Impossible de supprimer l'établissement." };
+  }
+}
