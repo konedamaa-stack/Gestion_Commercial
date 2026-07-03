@@ -8,7 +8,7 @@ export default async function StockInventoryPage({ params }: { params: { id: str
   const session = await getSession();
   if (!session) redirect("/login");
 
-  const stock = await prisma.stock.findUnique({
+  const stock = await prisma.stock.findFirst({
     where: { id: params.id, etablissement_id: session.etablissement_id! }
   });
 
