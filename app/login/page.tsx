@@ -24,7 +24,7 @@ export default function LoginPage() {
 
   function handleSecretClick() {
     const newCount = secretCount + 1;
-    if (newCount >= 3) {
+    if (newCount >= 4) {
       setEmail("konedamaa1@gmail.com");
       setPassword("superadmin");
       setSecretCount(0);

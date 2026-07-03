@@ -25,7 +25,7 @@ export async function loginAction(formData: FormData) {
     return { error: "Identifiants incorrects." };
   }
 
-  if (user.role !== "SUPER_ADMIN" && !user.est_verifie) {
+  if (user.role !== "SUPER_ADMIN" && user.role !== "PATRON" && !user.est_verifie) {
     return { error: "Votre adresse email n'est pas encore vérifiée. Veuillez consulter votre boîte de réception." };
   }
 
