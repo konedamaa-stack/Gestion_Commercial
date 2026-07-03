@@ -42,13 +42,21 @@ export default async function StockInventoryPage({ params }: { params: { id: str
     }
     const inv = inventoryMap.get(pId)!;
 
-    if (mvt.stock_destination_id === stock.id) {
-      // C'est une entrée
-      inv.quantite += mvt.quantite;
-    }
-    if (mvt.stock_source_id === stock.id) {
-      // C'est une sortie
-      inv.quantite -= mvt.quantite;
+    if (mvt.type === "ACHAT") {
+      if (mvt.stock_destination_id === stock.id) {
+        inv.quantite += mvt.quantite;
+      }
+    } else if (mvt.type === "VENTE") {
+      if (mvt.stock_source_id === stock.id) {
+        inv.quantite -= mvt.quantite;
+      }
+    } else {
+      if (mvt.stock_destination_id === stock.id) {
+        inv.quantite += mvt.quantite;
+      }
+      if (mvt.stock_source_id === stock.id) {
+        inv.quantite -= mvt.quantite;
+      }
     }
     
     // Calcul de la valeur basé sur le prix d'achat gros estimé

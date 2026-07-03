@@ -30,13 +30,26 @@ export default async function VentesPage() {
   
   const inventaire: Record<string, Record<string, number>> = {};
   mouvements.forEach(m => {
-    if (m.stock_destination_id) {
-      if (!inventaire[m.stock_destination_id]) inventaire[m.stock_destination_id] = {};
-      inventaire[m.stock_destination_id][m.produit_id] = (inventaire[m.stock_destination_id][m.produit_id] || 0) + m.quantite;
-    }
-    if (m.stock_source_id) {
-      if (!inventaire[m.stock_source_id]) inventaire[m.stock_source_id] = {};
-      inventaire[m.stock_source_id][m.produit_id] = (inventaire[m.stock_source_id][m.produit_id] || 0) - m.quantite;
+    if (m.type === "ACHAT") {
+      if (m.stock_destination_id) {
+        if (!inventaire[m.stock_destination_id]) inventaire[m.stock_destination_id] = {};
+        inventaire[m.stock_destination_id][m.produit_id] = (inventaire[m.stock_destination_id][m.produit_id] || 0) + m.quantite;
+      }
+    } else if (m.type === "VENTE") {
+      if (m.stock_source_id) {
+        if (!inventaire[m.stock_source_id]) inventaire[m.stock_source_id] = {};
+        inventaire[m.stock_source_id][m.produit_id] = (inventaire[m.stock_source_id][m.produit_id] || 0) - m.quantite;
+      }
+    } else {
+      // TRANSFERT_INTERNE ou autre
+      if (m.stock_destination_id) {
+        if (!inventaire[m.stock_destination_id]) inventaire[m.stock_destination_id] = {};
+        inventaire[m.stock_destination_id][m.produit_id] = (inventaire[m.stock_destination_id][m.produit_id] || 0) + m.quantite;
+      }
+      if (m.stock_source_id) {
+        if (!inventaire[m.stock_source_id]) inventaire[m.stock_source_id] = {};
+        inventaire[m.stock_source_id][m.produit_id] = (inventaire[m.stock_source_id][m.produit_id] || 0) - m.quantite;
+      }
     }
   });
 
