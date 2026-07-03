@@ -28,7 +28,7 @@ const navigation = [
   { name: "Utilisateurs (Admin)", href: "/employes", icon: Contact },
 ];
 
-import { LogOut } from "lucide-react";
+import { LogOut, Settings } from "lucide-react";
 import { logoutAction } from "@/app/login/logout";
 import { SessionData } from "@/lib/session";
 
@@ -85,8 +85,12 @@ export function Sidebar({ user }: { user: SessionData | null }) {
           </div>
         </div>
         
+        <Link href="/profil" className="w-full flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+          <Settings className="h-4 w-4" />
+          Mon Profil
+        </Link>
         <form action={logoutAction}>
-          <button type="submit" className="w-full flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+          <button type="submit" className="w-full flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors border border-slate-800">
             <LogOut className="h-4 w-4" />
             Déconnexion
           </button>
