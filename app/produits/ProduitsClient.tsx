@@ -99,11 +99,11 @@ export function ProduitsClient({ categories, userRole }: { categories: any[], us
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">Gros (F)</label>
-                  <input type="number" step="0.01" name="prix_achat_gros" required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" />
+                  <input type="number" step="1" name="prix_achat_gros" required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">Détail (F)</label>
-                  <input type="number" step="0.01" name="prix_achat_detail" required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" />
+                  <input type="number" step="1" name="prix_achat_detail" required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" />
                 </div>
               </div>
             </div>
@@ -113,11 +113,11 @@ export function ProduitsClient({ categories, userRole }: { categories: any[], us
               <div className="space-y-3">
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">Gros (F)</label>
-                  <input type="number" step="0.01" name="prix_vente_gros" required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" />
+                  <input type="number" step="1" name="prix_vente_gros" required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-slate-700 mb-1">Détail (F)</label>
-                  <input type="number" step="0.01" name="prix_vente_detail" required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" />
+                  <input type="number" step="1" name="prix_vente_detail" required className="w-full px-2 py-1.5 text-sm border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" />
                 </div>
               </div>
             </div>

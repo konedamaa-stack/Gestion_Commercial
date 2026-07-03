@@ -93,7 +93,7 @@ export function MouvementsClient({ produits, stocks, utilisateurs }: DataProps) 
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Prix Unitaire (F)</label>
-              <input type="number" step="0.01" name="prix_unitaire" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ex: 45.00" />
+              <input type="number" step="1" name="prix_unitaire" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ex: 4500" />
             </div>
           </div>
 

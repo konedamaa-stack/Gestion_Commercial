@@ -13,7 +13,7 @@ export async function addMouvement(formData: FormData) {
   const stock_source_id = formData.get("stock_source_id") as string;
   const stock_destination_id = formData.get("stock_destination_id") as string;
   const quantite = parseInt(formData.get("quantite") as string, 10);
-  const prix_unitaire = parseFloat(formData.get("prix_unitaire") as string);
+  const prix_unitaire = parseInt(formData.get("prix_unitaire") as string, 10);
   const utilisateur_id = session.userId;
 
   if (!produit_id || !stock_source_id || !stock_destination_id || isNaN(quantite) || isNaN(prix_unitaire)) {

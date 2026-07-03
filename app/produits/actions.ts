@@ -11,10 +11,10 @@ export async function addProduit(formData: FormData) {
   const nom = formData.get("nom") as string;
   const code_barre = formData.get("code_barre") as string | null;
   const categorie_id = formData.get("categorie_id") as string;
-  const prix_achat_gros = parseFloat(formData.get("prix_achat_gros") as string);
-  const prix_achat_detail = parseFloat(formData.get("prix_achat_detail") as string);
-  const prix_vente_gros = parseFloat(formData.get("prix_vente_gros") as string);
-  const prix_vente_detail = parseFloat(formData.get("prix_vente_detail") as string);
+  const prix_achat_gros = parseInt(formData.get("prix_achat_gros") as string, 10);
+  const prix_achat_detail = parseInt(formData.get("prix_achat_detail") as string, 10);
+  const prix_vente_gros = parseInt(formData.get("prix_vente_gros") as string, 10);
+  const prix_vente_detail = parseInt(formData.get("prix_vente_detail") as string, 10);
 
   if (!nom || !categorie_id || isNaN(prix_achat_gros) || isNaN(prix_achat_detail) || isNaN(prix_vente_gros) || isNaN(prix_vente_detail)) {
     throw new Error("Tous les champs obligatoires doivent être valides.");
@@ -59,10 +59,10 @@ export async function updateProduit(formData: FormData) {
   const nom = formData.get("nom") as string;
   const code_barre = formData.get("code_barre") as string | null;
   const categorie_id = formData.get("categorie_id") as string;
-  const prix_achat_gros = parseFloat(formData.get("prix_achat_gros") as string);
-  const prix_achat_detail = parseFloat(formData.get("prix_achat_detail") as string);
-  const prix_vente_gros = parseFloat(formData.get("prix_vente_gros") as string);
-  const prix_vente_detail = parseFloat(formData.get("prix_vente_detail") as string);
+  const prix_achat_gros = parseInt(formData.get("prix_achat_gros") as string, 10);
+  const prix_achat_detail = parseInt(formData.get("prix_achat_detail") as string, 10);
+  const prix_vente_gros = parseInt(formData.get("prix_vente_gros") as string, 10);
+  const prix_vente_detail = parseInt(formData.get("prix_vente_detail") as string, 10);
 
   if (!id || !nom || !categorie_id || isNaN(prix_achat_gros) || isNaN(prix_achat_detail) || isNaN(prix_vente_gros) || isNaN(prix_vente_detail)) {
     throw new Error("Tous les champs obligatoires doivent être valides.");
