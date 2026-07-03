@@ -3,19 +3,25 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-enum RoleUtilisateur {
-  PATRON
-  VENDEUR
-}
-
-enum TypeMouvement {
-  ACHAT
-  VENTE
-  TRANSFERT
+model Etablissement {
+  id              String            @id @default(uuid())
+  nom             String
+  plan_actuel     String            @default("Standard")
+  actif           Boolean           @default(false)
+  expiration      DateTime?         // null = illimité
+  
+  utilisateurs    Utilisateur[]
+  categories      Categorie[]
+  produits        Produit[]
+  stocks          Stock[]
+  mouvements      MouvementStock[]
+  
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 }
 
 model Utilisateur {
@@ -23,13 +29,18 @@ model Utilisateur {
   nom             String
   email           String            @unique
   mot_de_passe    String
-  role            RoleUtilisateur   @default(VENDEUR)
+  role            String            @default("VENDEUR") // SUPER_ADMIN, PATRON, VENDEUR
+  est_verifie     Boolean           @default(false)
+  token_verification String?
   
-  // Relation optionnelle pour lier un vendeur à une boutique
+  // Le SUPER_ADMIN n'a pas d'établissement
+  etablissement_id String?
+  etablissement    Etablissement?   @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
+  
+  // Relation optionnelle pour lier un vendeur à un stock
   stock_id        String?
   stock           Stock?            @relation(fields: [stock_id], references: [id])
   
-  // Historique des mouvements enregistrés par cet utilisateur
   mouvements_enregistres MouvementStock[]
   
   createdAt       DateTime          @default(now())
@@ -40,6 +51,10 @@ model Categorie {
   id              String            @id @default(uuid())
   nom             String
   description     String?
+  
+  etablissement_id String
+  etablissement    Etablissement    @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
+  
   produits        Produit[]
   
   createdAt       DateTime          @default(now())
@@ -49,7 +64,10 @@ model Categorie {
 model Produit {
   id                String          @id @default(uuid())
   nom               String
-  code_barre        String?         @unique
+  code_barre        String?
+  
+  etablissement_id  String
+  etablissement     Etablissement   @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
   
   categorie_id      String
   categorie         Categorie       @relation(fields: [categorie_id], references: [id])
@@ -63,22 +81,26 @@ model Produit {
   
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+  
+  @@unique([etablissement_id, code_barre]) // Un code barre est unique au sein d'un établissement
 }
 
 model Stock {
   id                String          @id @default(uuid())
-  nom               String          // ex: "Stock Central", "Boutique A", "Fournisseur X", "Client Y"
+  nom               String
   adresse           String?
-  est_externe       Boolean         @default(false) // Permet de distinguer les vrais stocks internes des Fournisseurs/Clients
+  telephone         String?
+  est_externe       Boolean         @default(false)
   
-  // Relation réflexive : un stock peut avoir un stock parent (le stock principal)
+  etablissement_id  String
+  etablissement     Etablissement   @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
+  
   stock_parent_id   String?
   stock_parent      Stock?          @relation("StockHierarchy", fields: [stock_parent_id], references: [id])
   stocks_enfants    Stock[]         @relation("StockHierarchy")
   
   vendeurs          Utilisateur[]
   
-  // Relations avec les mouvements de stock
   mouvements_sortants MouvementStock[] @relation("SourceStock")
   mouvements_entrants MouvementStock[] @relation("DestinationStock")
   
@@ -88,7 +110,10 @@ model Stock {
 
 model MouvementStock {
   id                    String          @id @default(uuid())
-  type                  TypeMouvement
+  type                  String
+  
+  etablissement_id      String
+  etablissement         Etablissement   @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
   
   produit_id            String
   produit               Produit         @relation(fields: [produit_id], references: [id])
@@ -100,7 +125,7 @@ model MouvementStock {
   stock_destination     Stock           @relation("DestinationStock", fields: [stock_destination_id], references: [id])
   
   quantite              Int
-  prix_unitaire_applique Float          // Prix au moment de la transaction
+  prix_unitaire_applique Float
   
   utilisateur_id        String
   utilisateur           Utilisateur     @relation(fields: [utilisateur_id], references: [id])
