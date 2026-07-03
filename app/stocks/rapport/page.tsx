@@ -113,14 +113,18 @@ export default async function RapportInventairePage({
     const stockInitial = initialMap.get(p.id) || 0;
     const { entrees, sorties } = periodMap.get(p.id) || { entrees: 0, sorties: 0 };
     const stockFinal = stockInitial + entrees - sorties;
+    const valeur = stockFinal * p.prix_achat_gros;
     return {
       produit: p,
       stockInitial,
       entrees,
       sorties,
       stockFinal,
+      valeur,
     };
   }).sort((a, b) => a.produit.nom.localeCompare(b.produit.nom));
+
+  const totalValeurStock = rapport.reduce((acc, curr) => acc + curr.valeur, 0);
 
   return (
     <div className="p-8">
@@ -133,14 +137,20 @@ export default async function RapportInventairePage({
         </Link>
       </div>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3 mb-2">
-          <ClipboardList className="h-8 w-8 text-indigo-600" />
-          Rapport d'Inventaire
-        </h1>
-        <p className="text-slate-500">
-          Consultez l'évolution de vos stocks sur une période donnée (Global ou par Boutique).
-        </p>
+      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3 mb-2">
+            <ClipboardList className="h-8 w-8 text-indigo-600" />
+            Rapport d'Inventaire
+          </h1>
+          <p className="text-slate-500">
+            Consultez l'évolution de vos stocks sur une période donnée (Global ou par Boutique).
+          </p>
+        </div>
+        <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm min-w-[200px]">
+          <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Valeur Totale Est. (Achat)</p>
+          <p className="text-3xl font-black text-slate-900">{formatNumber(totalValeurStock)} F</p>
+        </div>
       </div>
 
       <RapportFilter stocks={stocks} />
@@ -168,6 +178,9 @@ export default async function RapportInventairePage({
                 <th className="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Stock Final
                 </th>
+                <th className="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  Valeur (Achat)
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-slate-200">
@@ -193,11 +206,14 @@ export default async function RapportInventairePage({
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-black text-slate-900">
                     {formatNumber(item.stockFinal)}
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-slate-600">
+                    {formatNumber(item.valeur)} F
+                  </td>
                 </tr>
               ))}
               {rapport.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
                     Aucun produit trouvé.
                   </td>
                 </tr>
