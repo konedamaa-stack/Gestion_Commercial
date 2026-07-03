@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { stopImpersonation } from "@/app/super-admin/etablissements/actions";
 import { SessionData } from "@/lib/session";
+import { Toaster } from "react-hot-toast";
 
 export function ClientLayoutWrapper({ 
   children, 
@@ -41,6 +42,7 @@ export function ClientLayoutWrapper({
           {children}
         </main>
       </div>
+      <Toaster position="bottom-right" />
     </div>
   );
 }
