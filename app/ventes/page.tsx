@@ -23,6 +23,23 @@ export default async function VentesPage() {
     where: { etablissement_id: session.etablissement_id! }
   });
 
+  // Calculer l'inventaire global pour afficher le stock dispo
+  const mouvements = await prisma.mouvementStock.findMany({
+    where: { etablissement_id: session.etablissement_id! }
+  });
+  
+  const inventaire: Record<string, Record<string, number>> = {};
+  mouvements.forEach(m => {
+    if (m.stock_destination_id) {
+      if (!inventaire[m.stock_destination_id]) inventaire[m.stock_destination_id] = {};
+      inventaire[m.stock_destination_id][m.produit_id] = (inventaire[m.stock_destination_id][m.produit_id] || 0) + m.quantite;
+    }
+    if (m.stock_source_id) {
+      if (!inventaire[m.stock_source_id]) inventaire[m.stock_source_id] = {};
+      inventaire[m.stock_source_id][m.produit_id] = (inventaire[m.stock_source_id][m.produit_id] || 0) - m.quantite;
+    }
+  });
+
   // Historique des ventes
   const commandes = await prisma.commande.findMany({
     where: { etablissement_id: session.etablissement_id! },
@@ -47,7 +64,7 @@ export default async function VentesPage() {
             Créez des factures, gérez les transferts de stock et consultez l'historique.
           </p>
         </div>
-        <VentesClient produits={produits} stocks={stocks} clients={clients} userRole={session.role} />
+        <VentesClient produits={produits} stocks={stocks} clients={clients} userRole={session.role} inventaire={inventaire} />
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden mt-8">

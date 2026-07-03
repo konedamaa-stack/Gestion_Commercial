@@ -6,7 +6,7 @@ import { createCommande, LignePanier } from "./actions";
 import { toast } from "react-hot-toast";
 import { formatNumber } from "@/lib/format";
 
-export function VentesClient({ produits, stocks, clients, userRole }: any) {
+export function VentesClient({ produits, stocks, clients, userRole, inventaire }: any) {
   const [isOpen, setIsOpen] = useState(false);
   const [typeVente, setTypeVente] = useState("DETAIL");
   const [client, setClient] = useState("");
@@ -185,9 +185,14 @@ export function VentesClient({ produits, stocks, clients, userRole }: any) {
                     className="w-full px-3 py-3 bg-white border-2 border-blue-200 rounded-xl outline-none focus:border-blue-500 text-blue-900 shadow-sm"
                   >
                     <option value="" disabled>Rechercher ou scanner un produit...</option>
-                    {produits.map((p:any) => (
-                      <option key={p.id} value={p.id}>{p.nom} - {typeVente === "GROS" ? formatNumber(p.prix_vente_gros) : formatNumber(p.prix_vente_detail)} F</option>
-                    ))}
+                    {produits.map((p:any) => {
+                      const stockDispo = (inventaire && inventaire[stockSource] && inventaire[stockSource][p.id]) || 0;
+                      return (
+                        <option key={p.id} value={p.id}>
+                          {p.nom} - {typeVente === "GROS" ? formatNumber(p.prix_vente_gros) : formatNumber(p.prix_vente_detail)} F (Stock dispo: {stockDispo})
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
               </div>
