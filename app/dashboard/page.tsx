@@ -1,12 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { ArrowRightLeft, FileWarning, ShoppingBag, PackageOpen, Store } from "lucide-react";
+import { ArrowRightLeft, FileWarning, ShoppingBag, PackageOpen, Store, TrendingUp, Wallet, HandCoins } from "lucide-react";
 import Link from "next/link";
 import { DonutChart } from "@/components/charts/DonutChart";
 import { Timeline } from "@/components/ui/Timeline";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
-// Couleurs de la maquette (Inspiration)
 const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6366f1'];
 
 export default async function DashboardPage() {
@@ -16,15 +15,15 @@ export default async function DashboardPage() {
 
   if (userRole === "SUPER_ADMIN") redirect("/super-admin");
 
-  // 1. Récupération des données
-  const [produits, mouvements, stocksInternes] = await Promise.all([
+  // Récupérer les données globales
+  const [produits, mouvements, stocksInternes, commandes, depenses] = await Promise.all([
     prisma.produit.findMany({ 
       where: { etablissement_id: session.etablissement_id! },
       include: { categorie: true } 
     }),
     prisma.mouvementStock.findMany({
       where: { etablissement_id: session.etablissement_id! },
-      take: 20, // Plus de mouvements pour construire une timeline et des statistiques
+      take: 20,
       orderBy: { date_mouvement: 'desc' },
       include: { produit: { include: { categorie: true } }, stock_source: true, stock_destination: true, utilisateur: true }
     }),
@@ -33,145 +32,141 @@ export default async function DashboardPage() {
         etablissement_id: session.etablissement_id!,
         est_externe: false 
       } 
+    }),
+    prisma.commande.findMany({
+      where: { etablissement_id: session.etablissement_id! },
+      include: { lignes: true, client: true, vendeur: true }
+    }),
+    prisma.depense.findMany({
+      where: { etablissement_id: session.etablissement_id! }
     })
   ]);
 
-  // 2. Calculs complexes pour le Dashboard
-  
-  // A. Calcul de la valeur totale du stock (Approximation basée sur les mouvements et prix d'achat)
-  // On considère que tout ce qui entre dans un stock interne (Achat/Transfert) ajoute de la valeur,
-  // et tout ce qui sort (Vente/Transfert externe) en enlève.
+  // A. Valeur du Stock
   let totalValeur = 0;
   mouvements.forEach(mvt => {
-    if (!mvt.stock_destination.est_externe) {
-      totalValeur += mvt.quantite * mvt.produit.prix_achat_gros; // Entrée en stock
+    if (mvt.stock_destination && !mvt.stock_destination.est_externe) {
+      totalValeur += mvt.quantite * mvt.produit.prix_achat_gros;
     }
-    if (!mvt.stock_source.est_externe) {
-      totalValeur -= mvt.quantite * mvt.produit.prix_achat_gros; // Sortie de stock
+    if (mvt.stock_source && !mvt.stock_source.est_externe) {
+      totalValeur -= mvt.quantite * mvt.produit.prix_achat_gros;
     }
   });
-  // Empêcher d'avoir une valeur négative si l'historique est incomplet
   totalValeur = Math.max(0, totalValeur);
 
-  // B. Répartition par catégorie (pour le DonutChart)
-  // On se base sur le nombre de produits par catégorie pour la répartition
+  // B. Statistiques de Vente et Bénéfice
+  let totalVentes = 0;
+  let totalCoutsAchatsVendus = 0;
+  let totalCredits = 0;
+
+  commandes.forEach(cmd => {
+    // Si ce n'est pas un transfert interne, c'est une vraie vente
+    if (cmd.type_vente !== "TRANSFERT_INTERNE") {
+      totalVentes += cmd.montant_total;
+      cmd.lignes.forEach(ligne => {
+        totalCoutsAchatsVendus += ligne.quantite * ligne.prix_achat_unitaire;
+      });
+      totalCredits += (cmd.montant_total - cmd.montant_paye);
+    }
+  });
+
+  const totalDepenses = depenses.reduce((acc, d) => acc + d.montant, 0);
+  const beneficeNet = totalVentes - totalCoutsAchatsVendus - totalDepenses;
+
+  // C. Répartition Catalogue
   const repartitionMap: Record<string, number> = {};
   produits.forEach(p => {
     repartitionMap[p.categorie.nom] = (repartitionMap[p.categorie.nom] || 0) + 1;
   });
   const repartitionData = Object.entries(repartitionMap).map(([name, value], index) => ({
-    name,
-    value,
-    color: COLORS[index % COLORS.length]
+    name, value, color: COLORS[index % COLORS.length]
   }));
 
-  // C. Derniers produits ajoutés (Tableau)
-  const derniersProduits = produits.slice(-4).reverse(); // Les 4 derniers créés
+  const derniersProduits = produits.slice(-4).reverse();
 
-  // D. Timeline (Derniers mouvements)
+  // D. Timeline des Mouvements
   const timelineItems = mouvements.slice(0, 5).map(mvt => {
     const isAchat = mvt.type === 'ACHAT';
     const isVente = mvt.type === 'VENTE';
-    
     return {
       id: mvt.id,
       date: new Date(mvt.date_mouvement).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }),
-      title: isAchat ? 'Approvisionnement' : isVente ? 'Vente réalisée' : 'Transfert de stock',
-      description: `${mvt.quantite}x ${mvt.produit.nom} (${isAchat ? 'Fournisseur' : 'Client'} : ${isAchat ? mvt.stock_source.nom : isVente ? mvt.stock_destination.nom : 'Interne'})`,
+      title: isAchat ? 'Approvisionnement' : isVente ? 'Sortie Stock (Vente)' : 'Transfert',
+      description: `${mvt.quantite}x ${mvt.produit.nom}`,
       type: mvt.type as 'ACHAT' | 'VENTE' | 'TRANSFERT',
       href: '/mouvements'
     };
   });
 
-  // E. Activité Récente (Dernières ventes pour la liste de gauche)
-  const dernieresVentes = mouvements
-    .filter(m => m.type === 'VENTE')
+  const dernieresVentes = commandes
+    .filter(c => c.type_vente !== "TRANSFERT_INTERNE")
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 3)
-    .map(m => ({
-      id: m.id,
-      date: new Date(m.date_mouvement).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-      client: m.stock_destination.nom.replace('Client - ', ''),
-      montant: m.quantite * m.prix_unitaire_applique,
-      produit: m.produit.nom,
-      vendeur: m.utilisateur.nom
+    .map(c => ({
+      id: c.id,
+      date: new Date(c.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+      client: c.client?.nom || "Client de passage",
+      montant: c.montant_total,
+      articles: c.lignes.length,
+      vendeur: c.vendeur.nom
     }));
 
-  // F. Performance des Vendeurs (Top Sellers)
   const ventesParVendeur = new Map<string, { nom: string; total: number; ventes: number }>();
-  mouvements.filter(m => m.type === 'VENTE').forEach(m => {
-    const vendeurId = m.utilisateur.id;
-    const montant = m.quantite * m.prix_unitaire_applique;
+  commandes.filter(c => c.type_vente !== "TRANSFERT_INTERNE").forEach(c => {
+    const vendeurId = c.vendeur.id;
     if (!ventesParVendeur.has(vendeurId)) {
-      ventesParVendeur.set(vendeurId, { nom: m.utilisateur.nom, total: 0, ventes: 0 });
+      ventesParVendeur.set(vendeurId, { nom: c.vendeur.nom, total: 0, ventes: 0 });
     }
     const stats = ventesParVendeur.get(vendeurId)!;
-    stats.total += montant;
+    stats.total += c.montant_total;
     stats.ventes += 1;
   });
   const topVendeurs = Array.from(ventesParVendeur.values()).sort((a, b) => b.total - a.total).slice(0, 5);
 
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-6">
-      {/* HEADER : Bienvenue & Alertes */}
       <div className="flex flex-col lg:flex-row gap-6 mb-8">
-        
-        {/* Widget Valeur Totale */}
         <div className="flex-1 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
-          <h1 className="text-2xl font-bold text-slate-800 mb-6">Bienvenue, {session.nom}</h1>
+          <h1 className="text-2xl font-bold text-slate-800 mb-6">Tableau de bord</h1>
           
           {userRole === "PATRON" ? (
-            <div className="mt-4">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">VALEUR DU STOCK EST. (ACHAT)</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-5xl font-black text-slate-900">
-                  {new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 0 }).format(totalValeur)}
-                </span>
-                <span className="text-2xl font-bold text-slate-500">F</span>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Chiffre d'Affaires</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-slate-900">{totalVentes}</span>
+                  <span className="font-bold text-slate-500">F</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-green-600 flex items-center gap-1"><TrendingUp className="w-3 h-3"/> Bénéfice Net</p>
+                <div className="flex items-baseline gap-1">
+                  <span className={`text-3xl font-black ${beneficeNet >= 0 ? 'text-green-600' : 'text-red-600'}`}>{beneficeNet}</span>
+                  <span className="font-bold text-slate-500">F</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-red-600 flex items-center gap-1"><Wallet className="w-3 h-3"/> Dépenses</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-slate-900">{totalDepenses}</span>
+                  <span className="font-bold text-slate-500">F</span>
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-orange-600 flex items-center gap-1"><HandCoins className="w-3 h-3"/> Crédits à Recouvrer</p>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-black text-slate-900">{totalCredits}</span>
+                  <span className="font-bold text-slate-500">F</span>
+                </div>
               </div>
             </div>
           ) : (
-            <div className="mt-4">
-              <p className="text-slate-500">
-                Vous êtes connecté en tant que vendeur. Accédez à vos outils de vente depuis le menu latéral.
-              </p>
-            </div>
+            <div className="mt-4 text-slate-500">Accédez à vos outils de vente depuis le menu latéral.</div>
           )}
         </div>
-
-        {/* Widget Alertes (Checklist) - Uniquement pour PATRON */}
-        {userRole === "PATRON" && (
-          <div className="lg:w-[400px] bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
-          <ul className="space-y-4">
-            <li className="flex items-start justify-between text-sm">
-              <div className="flex items-center gap-3">
-                <Store className="h-5 w-5 text-indigo-500" />
-                <span className="font-medium text-slate-700">{stocksInternes.length} entrepôt(s) actif(s)</span>
-              </div>
-              <Link href="/stocks" className="text-blue-600 hover:underline">Gérer</Link>
-            </li>
-            <li className="flex items-start justify-between text-sm">
-              <div className="flex items-center gap-3">
-                <PackageOpen className="h-5 w-5 text-orange-500" />
-                <span className="font-medium text-slate-700">{produits.length} produits au catalogue</span>
-              </div>
-              <Link href="/produits" className="text-blue-600 hover:underline">Ajouter</Link>
-            </li>
-            <li className="flex items-start justify-between text-sm">
-              <div className="flex items-center gap-3">
-                <FileWarning className="h-5 w-5 text-emerald-500" />
-                <span className="font-medium text-slate-700">Mouvements synchronisés</span>
-              </div>
-              <span className="text-slate-400 text-xs">À jour</span>
-            </li>
-          </ul>
-        </div>
-        )}
       </div>
 
-      {/* ROW 1: Répartition & Contrats (Produits) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Widget Répartition */}
         <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm flex flex-col">
           <h2 className="text-lg font-bold text-slate-800 mb-6">Répartition Catalogue</h2>
           <div className="flex-1 flex flex-col justify-center">
@@ -193,37 +188,34 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* Widget Produits */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col overflow-hidden">
           <div className="p-6 border-b border-slate-50 flex items-center justify-between">
-            <h2 className="text-lg font-bold text-slate-800">Derniers produits ajoutés</h2>
-            <Link href="/produits" className="text-sm text-blue-600 hover:underline">Voir le catalogue</Link>
+            <h2 className="text-lg font-bold text-slate-800">Dernières Ventes Réalisées</h2>
+            <Link href="/ventes" className="text-sm text-blue-600 hover:underline">Point de Vente</Link>
           </div>
           <div className="flex-1 p-0">
             <table className="min-w-full">
               <thead className="bg-slate-50/50">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500">Nom</th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500">Catégorie</th>
-                  <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500">Prix Détail</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500">Date</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500">Client</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500">Articles</th>
+                  <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500">Montant</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
-                {derniersProduits.length === 0 ? (
+                {dernieresVentes.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="px-6 py-8 text-center text-sm text-slate-500">Aucun produit au catalogue.</td>
+                    <td colSpan={4} className="px-6 py-8 text-center text-sm text-slate-500">Aucune vente enregistrée.</td>
                   </tr>
                 ) : (
-                  derniersProduits.map((prod) => (
-                    <tr key={prod.id} className="hover:bg-slate-50/50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-800">{prod.nom}</td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700">
-                          {prod.categorie.nom}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-slate-900">
-                        {prod.prix_vente_detail} F
+                  dernieresVentes.map((v) => (
+                    <tr key={v.id} className="hover:bg-slate-50/50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">{v.date}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-800">{v.client}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{v.articles}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-green-600">
+                        {v.montant} F
                       </td>
                     </tr>
                   ))
@@ -234,53 +226,12 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* ROW 2: RDV (Ventes) & Opérations (Mouvements) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* Widget Dernières Ventes */}
-        <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-bold text-slate-800">Dernières Ventes</h2>
-            <Link href="/mouvements" className="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors">
-              Nouveau
-            </Link>
-          </div>
-          
-          <div className="space-y-3">
-            {dernieresVentes.length === 0 ? (
-              <p className="text-sm text-slate-500 text-center py-4">Aucune vente récente.</p>
-            ) : (
-              dernieresVentes.map((v, i) => (
-                <div key={i} className="relative pl-6 py-3 border border-slate-100 rounded-xl hover:border-slate-200 transition-colors">
-                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500 rounded-l-xl"></div>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-bold text-slate-500">{v.date}</span>
-                    <span className="text-xs font-bold text-green-600">+{v.montant.toFixed(2)} F</span>
-                  </div>
-                  <p className="text-sm font-semibold text-slate-800 mb-0.5">Client : {v.client}</p>
-                  <div className="flex items-center justify-between text-xs text-slate-500">
-                    <div className="flex items-center gap-1">
-                      <ShoppingBag className="h-3 w-3" />
-                      {v.produit}
-                    </div>
-                    <div className="font-medium bg-slate-100 px-2 py-0.5 rounded-full text-slate-600">
-                      Par: {v.vendeur}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Widget Top Vendeurs (Performance) */}
         {userRole === "PATRON" && (
           <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-slate-800">Top Vendeurs</h2>
-              <Link href="/employes" className="text-sm text-blue-600 hover:underline">Voir l'équipe</Link>
             </div>
-            
             <div className="space-y-4">
               {topVendeurs.length === 0 ? (
                 <p className="text-sm text-slate-500 text-center py-4">Aucune vente enregistrée.</p>
@@ -293,11 +244,11 @@ export default async function DashboardPage() {
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-slate-800">{v.nom}</p>
-                        <p className="text-xs text-slate-500">{v.ventes} vente{v.ventes > 1 ? 's' : ''}</p>
+                        <p className="text-xs text-slate-500">{v.ventes} facture(s)</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-slate-900">{v.total.toFixed(2)} F</p>
+                      <p className="text-sm font-bold text-slate-900">{v.total} F</p>
                     </div>
                   </div>
                 ))
@@ -306,18 +257,12 @@ export default async function DashboardPage() {
           </div>
         )}
 
-        {/* Widget Dernières Opérations (Timeline) */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm flex flex-col overflow-hidden">
           <div className="p-6 border-b border-slate-50">
-            <h2 className="text-lg font-bold text-slate-800">Historique des opérations</h2>
+            <h2 className="text-lg font-bold text-slate-800">Historique des mouvements de stock</h2>
           </div>
           <div className="flex-1 p-6">
             <Timeline items={timelineItems} />
-          </div>
-          <div className="p-4 border-t border-slate-50 text-center bg-slate-50/50">
-            <Link href="/mouvements" className="text-sm font-semibold text-blue-600 hover:text-blue-500">
-              Voir toutes mes opérations
-            </Link>
           </div>
         </div>
       </div>

@@ -9,14 +9,20 @@ import {
   Truck, 
   Contact, 
   Warehouse, 
-  ArrowRightLeft 
+  ArrowRightLeft,
+  Receipt,
+  Wallet,
+  HandCoins
 } from "lucide-react";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Ventes & Factures", href: "/ventes", icon: Receipt },
   { name: "Mouvements", href: "/mouvements", icon: ArrowRightLeft },
   { name: "Stocks", href: "/stocks", icon: Warehouse },
   { name: "Produits", href: "/produits", icon: Package },
+  { name: "Crédits", href: "/credits", icon: HandCoins },
+  { name: "Dépenses", href: "/depenses", icon: Wallet },
   { name: "Clients", href: "/clients", icon: Users },
   { name: "Fournisseurs", href: "/fournisseurs", icon: Truck },
   { name: "Utilisateurs (Admin)", href: "/employes", icon: Contact },
