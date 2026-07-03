@@ -3,6 +3,7 @@ import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { Package, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { formatNumber } from "@/lib/format";
 
 export default async function StockInventoryPage({ params }: { params: { id: string } }) {
   const session = await getSession();
@@ -87,7 +88,7 @@ export default async function StockInventoryPage({ params }: { params: { id: str
           {session.role === "PATRON" && (
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm min-w-[150px]">
               <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Valeur Est. (Achat)</p>
-              <p className="text-2xl font-black text-slate-900">{totalValeur} F</p>
+              <p className="text-2xl font-black text-slate-900">{formatNumber(totalValeur)} F</p>
             </div>
           )}
         </div>
@@ -131,7 +132,7 @@ export default async function StockInventoryPage({ params }: { params: { id: str
                     </td>
                     {session.role === "PATRON" && (
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-slate-600">
-                        {item.valeur} F
+                        {formatNumber(item.valeur)} F
                       </td>
                     )}
                   </tr>

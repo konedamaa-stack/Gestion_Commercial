@@ -3,6 +3,7 @@ import { HandCoins } from "lucide-react";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { CreditsClient } from "./CreditsClient";
+import { formatNumber } from "@/lib/format";
 
 export default async function CreditsPage() {
   const session = await getSession();
@@ -39,8 +40,8 @@ export default async function CreditsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <p className="text-sm font-medium text-slate-500 mb-1">Total à recouvrir</p>
-          <p className="text-3xl font-bold text-orange-600">{totalCredits} F</p>
+          <p className="text-sm font-medium text-slate-500 mb-1">Total des Crédits Clients</p>
+          <p className="text-3xl font-bold text-orange-600">{formatNumber(totalCredits)} F</p>
         </div>
       </div>
 
@@ -76,14 +77,14 @@ export default async function CreditsPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-medium">
                       {nomDebiteur}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                      {cmd.montant_total} F
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-slate-900">
+                      {formatNumber(cmd.montant_total)} F
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600">
-                      {cmd.montant_paye} F
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-green-600">
+                      {formatNumber(cmd.montant_paye)} F
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-orange-600">
-                      {reste} F
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-black text-orange-600">
+                      {formatNumber(reste)} F
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                       <CreditsClient commandeId={cmd.id} resteAPayer={reste} />

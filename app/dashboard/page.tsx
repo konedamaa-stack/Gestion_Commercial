@@ -5,6 +5,7 @@ import { DonutChart } from "@/components/charts/DonutChart";
 import { Timeline } from "@/components/ui/Timeline";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
+import { formatNumber } from "@/lib/format";
 
 const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6366f1'];
 
@@ -134,28 +135,28 @@ export default async function DashboardPage() {
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Chiffre d'Affaires</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-slate-900">{totalVentes}</span>
+                  <span className="text-3xl font-black text-slate-900">{formatNumber(totalVentes)}</span>
                   <span className="font-bold text-slate-500">F</span>
                 </div>
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-green-600 flex items-center gap-1"><TrendingUp className="w-3 h-3"/> Bénéfice Net</p>
                 <div className="flex items-baseline gap-1">
-                  <span className={`text-3xl font-black ${beneficeNet >= 0 ? 'text-green-600' : 'text-red-600'}`}>{beneficeNet}</span>
+                  <span className={`text-3xl font-black ${beneficeNet >= 0 ? 'text-green-600' : 'text-red-600'}`}>{formatNumber(beneficeNet)}</span>
                   <span className="font-bold text-slate-500">F</span>
                 </div>
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-red-600 flex items-center gap-1"><Wallet className="w-3 h-3"/> Dépenses</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-slate-900">{totalDepenses}</span>
+                  <span className="text-3xl font-black text-slate-900">{formatNumber(totalDepenses)}</span>
                   <span className="font-bold text-slate-500">F</span>
                 </div>
               </div>
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 text-orange-600 flex items-center gap-1"><HandCoins className="w-3 h-3"/> Crédits à Recouvrer</p>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-black text-slate-900">{totalCredits}</span>
+                  <span className="text-3xl font-black text-slate-900">{formatNumber(totalCredits)}</span>
                   <span className="font-bold text-slate-500">F</span>
                 </div>
               </div>
@@ -215,7 +216,7 @@ export default async function DashboardPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-800">{v.client}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{v.articles}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-green-600">
-                        {v.montant} F
+                        {formatNumber(v.montant)} F
                       </td>
                     </tr>
                   ))
@@ -248,7 +249,7 @@ export default async function DashboardPage() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-bold text-slate-900">{v.total} F</p>
+                      <p className="text-sm font-bold text-slate-900">{formatNumber(v.total)} F</p>
                     </div>
                   </div>
                 ))

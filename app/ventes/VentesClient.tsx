@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, ShoppingCart, Trash2, X } from "lucide-react";
+import { Plus, Minus, Trash2, ShoppingCart, UserPlus, CreditCard, Banknote, X } from "lucide-react";
 import { createCommande, LignePanier } from "./actions";
 import { toast } from "react-hot-toast";
+import { formatNumber } from "@/lib/format";
 
 export function VentesClient({ produits, stocks, clients, userRole }: any) {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,7 +37,6 @@ export function VentesClient({ produits, stocks, clients, userRole }: any) {
 
   const updatePrixVenteLigne = (id: string, prix: number) => {
     if (prix < 0) return;
-    // Permettre de modifier le prix de vente unitaire si besoin
     setPanier(panier.map(p => p.id === id ? { ...p, prix_vente_personnalise: prix } : p));
   };
 
@@ -118,7 +118,6 @@ export function VentesClient({ produits, stocks, clients, userRole }: any) {
 
             <div className="flex-1 overflow-auto p-6 flex flex-col md:flex-row gap-6">
               
-              {/* Côté gauche : Configuration & Sélection */}
               <div className="w-full md:w-1/2 flex flex-col gap-4">
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
                   <div>
@@ -187,13 +186,12 @@ export function VentesClient({ produits, stocks, clients, userRole }: any) {
                   >
                     <option value="" disabled>Rechercher ou scanner un produit...</option>
                     {produits.map((p:any) => (
-                      <option key={p.id} value={p.id}>{p.nom} - {typeVente === "GROS" ? p.prix_vente_gros : p.prix_vente_detail} F</option>
+                      <option key={p.id} value={p.id}>{p.nom} - {typeVente === "GROS" ? formatNumber(p.prix_vente_gros) : formatNumber(p.prix_vente_detail)} F</option>
                     ))}
                   </select>
                 </div>
               </div>
 
-              {/* Côté droit : Panier & Total */}
               <div className="w-full md:w-1/2 flex flex-col bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
                 <div className="bg-slate-100 p-3 border-b border-slate-200 font-semibold text-slate-700">
                   Panier ({panier.length} articles)
@@ -216,7 +214,9 @@ export function VentesClient({ produits, stocks, clients, userRole }: any) {
                               onChange={(e) => updateQuantite(p.id, parseInt(e.target.value) || 1)}
                               className="w-16 px-2 py-1 border border-slate-300 rounded text-center text-sm" 
                             />
-                            <span className="text-sm text-slate-500">x</span>
+                            <div className="text-xs text-slate-500 mt-1">
+                              {formatNumber(getPrixUnitaire(p))} F x {p.quantite}
+                            </div>
                             <input 
                               type="number" 
                               min="0"
@@ -224,7 +224,7 @@ export function VentesClient({ produits, stocks, clients, userRole }: any) {
                               onChange={(e) => updatePrixVenteLigne(p.id, parseInt(e.target.value) || 0)}
                               className="w-24 px-2 py-1 border border-slate-300 rounded text-right text-sm" 
                             />
-                            <span className="text-sm font-semibold text-blue-700">= {getPrixUnitaire(p) * p.quantite} F</span>
+                            <span className="text-sm font-semibold text-blue-700">= {formatNumber(getPrixUnitaire(p) * p.quantite)} F</span>
                           </div>
                         </div>
                         <button onClick={() => supprimerDuPanier(p.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg">
@@ -235,9 +235,9 @@ export function VentesClient({ produits, stocks, clients, userRole }: any) {
                   )}
                 </div>
                 <div className="bg-white border-t border-slate-200 p-4 space-y-4">
-                  <div className="flex justify-between items-end">
-                    <span className="text-slate-500 font-medium">Total à payer</span>
-                    <span className="text-3xl font-black text-slate-900">{montantTotal} F</span>
+                  <div className="flex justify-between items-center mb-6">
+                    <span className="text-slate-600 font-medium">Total de la commande</span>
+                    <span className="text-3xl font-black text-slate-900">{formatNumber(montantTotal)} F</span>
                   </div>
                   
                   {typeVente !== "TRANSFERT_INTERNE" && (
@@ -252,10 +252,14 @@ export function VentesClient({ produits, stocks, clients, userRole }: any) {
                         placeholder="Ex: 5000"
                       />
                       {montantPaye < montantTotal && montantPaye > 0 && (
-                        <p className="text-orange-600 text-sm mt-1 font-medium">Reste à payer (Crédit) : {montantTotal - montantPaye} F</p>
+                        <div className="mt-2 p-3 bg-orange-50 rounded-lg border border-orange-100">
+                          <p className="text-orange-600 text-sm font-medium">Reste à payer (Crédit) : {formatNumber(montantTotal - montantPaye)} F</p>
+                        </div>
                       )}
                       {montantPaye > montantTotal && (
-                        <p className="text-blue-600 text-sm mt-1 font-medium">Monnaie à rendre : {montantPaye - montantTotal} F</p>
+                        <div className="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                          <p className="text-blue-600 text-sm font-medium">Monnaie à rendre : {formatNumber(montantPaye - montantTotal)} F</p>
+                        </div>
                       )}
                     </div>
                   )}

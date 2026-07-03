@@ -3,6 +3,7 @@ import { Wallet, Trash2 } from "lucide-react";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { DepensesClient } from "./DepensesClient";
+import { formatNumber } from "@/lib/format";
 
 export default async function DepensesPage() {
   const session = await getSession();
@@ -33,8 +34,8 @@ export default async function DepensesPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <p className="text-sm font-medium text-slate-500 mb-1">Total des Dépenses</p>
-          <p className="text-3xl font-bold text-red-600">{totalDepenses} F</p>
+          <p className="text-sm font-bold text-slate-500 uppercase">Total des dépenses</p>
+          <p className="text-3xl font-bold text-red-600">{formatNumber(totalDepenses)} F</p>
         </div>
       </div>
 
@@ -63,8 +64,8 @@ export default async function DepensesPage() {
                     <div className="text-sm font-medium text-slate-900">{dep.motif}</div>
                     {dep.description && <div className="text-xs text-slate-500 mt-1">{dep.description}</div>}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-bold text-red-600">-{dep.montant} F</div>
+                  <td className="px-6 py-4 whitespace-nowrap text-right">
+                    <div className="text-sm font-bold text-red-600">-{formatNumber(dep.montant)} F</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 flex justify-between items-center">
                     <span>{dep.enregistre_par.nom}</span>

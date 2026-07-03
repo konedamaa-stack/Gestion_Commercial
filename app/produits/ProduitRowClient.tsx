@@ -6,6 +6,7 @@ import { Modal } from "@/components/Modal";
 import { SubmitButton } from "@/components/SubmitButton";
 import { ConfirmDeleteModal } from "@/components/ConfirmDeleteModal";
 import { deleteProduit, updateProduit } from "./actions";
+import { formatNumber } from "@/lib/format";
 
 export function ProduitRowClient({ 
   produit, 
@@ -32,12 +33,12 @@ export function ProduitRowClient({
           </span>
         </td>
         <td className="px-6 py-4 whitespace-nowrap">
-          <div className="text-sm text-slate-900">{produit.prix_achat_gros} F</div>
-          <div className="text-xs text-slate-500">{produit.prix_achat_detail} F (Détail)</div>
+          <div className="text-sm text-slate-900">{formatNumber(produit.prix_achat_gros)} F</div>
+          <div className="text-xs text-slate-500">{formatNumber(produit.prix_achat_detail)} F (Détail)</div>
         </td>
         <td className="px-6 py-4 whitespace-nowrap">
-          <div className="text-sm font-bold text-slate-900">{produit.prix_vente_gros} F</div>
-          <div className="text-xs text-slate-500">{produit.prix_vente_detail} F (Détail)</div>
+          <div className="text-sm font-bold text-slate-900">{formatNumber(produit.prix_vente_gros)} F</div>
+          <div className="text-xs text-slate-500">{formatNumber(produit.prix_vente_detail)} F (Détail)</div>
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
           <div className="flex justify-end gap-2">
