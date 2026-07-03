@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Trash2, ArrowRightLeft } from "lucide-react";
 import { ConfirmDeleteModal } from "@/components/ConfirmDeleteModal";
 import { deleteMouvement } from "./actions";
+import { formatNumber } from "@/lib/format";
 
 export function MouvementRowClient({ 
   mvt,
@@ -46,11 +47,11 @@ export function MouvementRowClient({
           </span>
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-slate-900">
-          {mvt.quantite}
+          {formatNumber(mvt.quantite)}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-right">
-          <div className="text-sm font-bold text-slate-900">{(mvt.quantite * mvt.prix_unitaire_applique).toFixed(2)} F</div>
-          <div className="text-xs text-slate-500">{mvt.prix_unitaire_applique} F / u</div>
+          <div className="text-sm font-bold text-slate-900">{formatNumber(mvt.quantite * mvt.prix_unitaire_applique)} F</div>
+          <div className="text-xs text-slate-500">{formatNumber(mvt.prix_unitaire_applique)} F / u</div>
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
           <div className="flex justify-end gap-2">

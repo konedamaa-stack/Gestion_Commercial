@@ -4,6 +4,7 @@ import { StocksClient } from "./StocksClient";
 import { StockRowClient } from "./StockRowClient";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 // Server component pour la page des stocks
 export default async function StocksPage() {
@@ -40,7 +41,12 @@ export default async function StocksPage() {
             Gérez vos entrepôts principaux et vos boutiques secondaires (Hub & Spoke).
           </p>
         </div>
-        <StocksClient stocks={stocks} />
+        <div className="flex items-center gap-3">
+          <Link href="/stocks/rapport" className="bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium transition-colors">
+            Rapport d'Inventaire
+          </Link>
+          <StocksClient stocks={stocks} />
+        </div>
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
