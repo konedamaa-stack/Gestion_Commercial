@@ -100,3 +100,25 @@ export async function deleteProduit(id: string) {
   
   revalidatePath("/produits");
 }
+
+export async function addCategorie(formData: FormData) {
+  const session = await getSession();
+  if (session?.role !== "PATRON") throw new Error("Accès refusé : Seul le patron peut ajouter une catégorie");
+
+  const nom = formData.get("nom") as string;
+  const description = formData.get("description") as string | null;
+
+  if (!nom) {
+    throw new Error("Le nom de la catégorie est requis.");
+  }
+
+  await prisma.categorie.create({
+    data: {
+      etablissement_id: session.etablissement_id!,
+      nom,
+      description: description || null,
+    },
+  });
+
+  revalidatePath("/produits");
+}

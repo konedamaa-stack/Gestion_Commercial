@@ -1,27 +1,64 @@
 "use client";
 
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Tags } from "lucide-react";
 import { Modal } from "@/components/Modal";
 import { SubmitButton } from "@/components/SubmitButton";
-import { addProduit } from "./actions";
+import { addProduit, addCategorie } from "./actions";
 
 export function ProduitsClient({ categories, userRole }: { categories: any[], userRole?: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCatModalOpen, setIsCatModalOpen] = useState(false);
 
-  // Le vendeur ne peut pas ajouter de produit
+  // Le vendeur ne peut pas ajouter de produit/catégorie
   if (userRole === "VENDEUR") return null;
 
   return (
-    <>
+    <div className="flex gap-3">
+      <button 
+        onClick={() => setIsCatModalOpen(true)}
+        className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-200 transition-colors flex items-center gap-2 border border-slate-200"
+      >
+        <Tags className="h-4 w-4" />
+        Ajouter Catégorie
+      </button>
+
       <button 
         onClick={() => setIsModalOpen(true)}
         className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors flex items-center gap-2"
       >
         <Plus className="h-4 w-4" />
-        Ajouter un Produit
+        Ajouter Produit
       </button>
 
+      {/* Modal pour Catégorie */}
+      <Modal 
+        isOpen={isCatModalOpen} 
+        onClose={() => setIsCatModalOpen(false)} 
+        title="Ajouter une Catégorie"
+      >
+        <form 
+          action={async (formData) => {
+            await addCategorie(formData);
+            setIsCatModalOpen(false);
+          }} 
+          className="space-y-4"
+        >
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Nom de la catégorie</label>
+            <input type="text" name="nom" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="ex: Informatique" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Description (Optionnel)</label>
+            <input type="text" name="description" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Description de la catégorie..." />
+          </div>
+          <div className="pt-4">
+            <SubmitButton label="Ajouter la catégorie" />
+          </div>
+        </form>
+      </Modal>
+
+      {/* Modal pour Produit */}
       <Modal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
@@ -46,9 +83,13 @@ export function ProduitsClient({ categories, userRole }: { categories: any[], us
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Catégorie</label>
-              <select name="categorie_id" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
-                {categories.map(c => <option key={c.id} value={c.id}>{c.nom}</option>)}
-              </select>
+              {categories.length === 0 ? (
+                <div className="text-sm text-red-500 py-2">Veuillez d'abord créer une catégorie.</div>
+              ) : (
+                <select name="categorie_id" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
+                  {categories.map(c => <option key={c.id} value={c.id}>{c.nom}</option>)}
+                </select>
+              )}
             </div>
           </div>
 
@@ -87,6 +128,6 @@ export function ProduitsClient({ categories, userRole }: { categories: any[], us
           </div>
         </form>
       </Modal>
-    </>
+    </div>
   );
 }
