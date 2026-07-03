@@ -127,7 +127,7 @@ export default async function RapportInventairePage({
   const totalValeurStock = rapport.reduce((acc, curr) => acc + curr.valeur, 0);
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="mb-6">
         <Link
           href="/stocks"

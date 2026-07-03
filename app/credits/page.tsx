@@ -25,7 +25,7 @@ export default async function CreditsPage() {
   const totalCredits = commandesNonSoldees.reduce((acc, cmd) => acc + (cmd.montant_total - cmd.montant_paye), 0);
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">

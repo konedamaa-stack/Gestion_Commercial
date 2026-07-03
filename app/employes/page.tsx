@@ -29,7 +29,7 @@ export default async function EmployesPage() {
   });
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <EmployesClient stocks={stocksInternes} />
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">

@@ -57,7 +57,7 @@ export default async function MouvementsPage({
   const utilisateurs = await prisma.utilisateur.findMany({ where: { etablissement_id: session.etablissement_id! } });
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <MouvementsClient produits={produits} stocks={stocks} utilisateurs={utilisateurs} />
       
       <MouvementsFilter />

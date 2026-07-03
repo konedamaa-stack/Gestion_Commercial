@@ -55,7 +55,7 @@ export default function LoginPage() {
           <p className="text-slate-400 mt-2 text-sm">Connectez-vous à votre espace</p>
         </div>
         
-        <div className="p-8">
+        <div className="p-4 md:p-8">
           <form action={handleSubmit} className="space-y-6">
             {error && (
               <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100">

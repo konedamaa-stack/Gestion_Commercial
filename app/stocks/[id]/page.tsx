@@ -70,7 +70,7 @@ export default async function StockInventoryPage({ params }: { params: { id: str
   const totalValeur = inventory.reduce((acc, item) => acc + item.valeur, 0);
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="mb-6">
         <Link href="/stocks" className="text-blue-600 hover:underline flex items-center gap-2 text-sm font-medium">
           <ArrowLeft className="h-4 w-4" /> Retour aux stocks
