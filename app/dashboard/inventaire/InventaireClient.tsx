@@ -37,7 +37,7 @@ export function InventaireClient() {
   };
 
   const formatMoney = (amount: number) => {
-    return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "XOF" }).format(amount);
+    return new Intl.NumberFormat("fr-FR").format(amount) + " F";
   };
 
   return (

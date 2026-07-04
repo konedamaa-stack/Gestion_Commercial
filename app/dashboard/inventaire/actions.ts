@@ -87,20 +87,38 @@ export async function getInventaire(startDateStr: string, endDateStr: string): P
     const isSourceInternal = m.stock_source_id ? internalStockIds.includes(m.stock_source_id) : false;
     const isDestInternal = m.stock_destination_id ? internalStockIds.includes(m.stock_destination_id) : false;
 
-    // Entrée globale : vient de l'externe (ou null) vers interne
-    if (isDestInternal && !isSourceInternal) {
-      if (isDateBefore) ligne.stockInitial += m.quantite;
-      else if (isDateInPeriod) {
-        ligne.entrees += m.quantite;
-        totalEntrees += m.quantite * m.prix_unitaire_applique;
+    if (m.type === "ACHAT") {
+      if (isDestInternal) {
+        if (isDateBefore) ligne.stockInitial += m.quantite;
+        else if (isDateInPeriod) {
+          ligne.entrees += m.quantite;
+          totalEntrees += m.quantite * m.prix_unitaire_applique;
+        }
       }
-    }
-    // Sortie globale : vient de l'interne vers externe (ou null)
-    else if (isSourceInternal && !isDestInternal) {
-      if (isDateBefore) ligne.stockInitial -= m.quantite;
-      else if (isDateInPeriod) {
-        ligne.sorties += m.quantite;
-        totalSorties += m.quantite * m.prix_unitaire_applique;
+    } else if (m.type === "VENTE") {
+      if (isSourceInternal) {
+        if (isDateBefore) ligne.stockInitial -= m.quantite;
+        else if (isDateInPeriod) {
+          ligne.sorties += m.quantite;
+          totalSorties += m.quantite * m.prix_unitaire_applique;
+        }
+      }
+    } else {
+      // TRANSFERT
+      if (isDestInternal) {
+        if (isDateBefore) ligne.stockInitial += m.quantite;
+        else if (isDateInPeriod) {
+          ligne.entrees += m.quantite;
+          // Ne pas compter les transferts dans le "totalEntrees" financier ?
+          // ou on les compte à 0 F.
+        }
+      }
+      if (isSourceInternal) {
+        if (isDateBefore) ligne.stockInitial -= m.quantite;
+        else if (isDateInPeriod) {
+          ligne.sorties += m.quantite;
+          // Ne pas compter les transferts dans le "totalSorties" financier
+        }
       }
     }
   });
