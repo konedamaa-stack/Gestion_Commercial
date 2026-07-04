@@ -16,7 +16,7 @@ export default async function VentesPage() {
   });
 
   const stocks = await prisma.stock.findMany({
-    where: { etablissement_id: session.etablissement_id! }
+    where: { etablissement_id: session.etablissement_id!, est_externe: false }
   });
 
   const clients = await prisma.client.findMany({

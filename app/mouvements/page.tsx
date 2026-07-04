@@ -56,7 +56,7 @@ export default async function MouvementsPage({
   });
 
   const produits = await prisma.produit.findMany({ where: { etablissement_id: session.etablissement_id! } });
-  const stocks = await prisma.stock.findMany({ where: { etablissement_id: session.etablissement_id! } });
+  const stocks = await prisma.stock.findMany({ where: { etablissement_id: session.etablissement_id!, est_externe: false } });
   const utilisateurs = await prisma.utilisateur.findMany({ where: { etablissement_id: session.etablissement_id! } });
 
   return (
