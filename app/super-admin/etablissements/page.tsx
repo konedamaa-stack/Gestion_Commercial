@@ -8,6 +8,10 @@ export default async function EtablissementsPage() {
     include: {
       _count: {
         select: { utilisateurs: true }
+      },
+      utilisateurs: {
+        where: { role: "PATRON" },
+        select: { email: true }
       }
     },
     orderBy: { createdAt: 'desc' }
@@ -74,7 +78,13 @@ export default async function EtablissementsPage() {
                     {new Date(etab.createdAt).toLocaleDateString('fr-FR')}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
-                    <EtablissementActionsClient id={etab.id} actif={etab.actif} expiration={etab.expiration} plan_actuel={etab.plan_actuel} />
+                    <EtablissementActionsClient 
+                      id={etab.id} 
+                      actif={etab.actif} 
+                      expiration={etab.expiration} 
+                      plan_actuel={etab.plan_actuel} 
+                      email_patron={etab.utilisateurs[0]?.email || ""}
+                    />
                   </td>
                 </tr>
               ))

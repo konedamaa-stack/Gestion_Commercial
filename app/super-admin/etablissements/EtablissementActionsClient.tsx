@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { toggleEtablissementStatus, renewEtablissement, impersonateEtablissement, upgradeToPro, deleteEtablissement } from "./actions";
+import { toggleEtablissementStatus, renewEtablissement, impersonateEtablissement, upgradeToPro, deleteEtablissement, resetEtablissementCredentials } from "./actions";
 
 export default function EtablissementActionsClient({ 
   id, 
   actif, 
   expiration,
-  plan_actuel
+  plan_actuel,
+  email_patron
 }: { 
   id: string, 
   actif: boolean,
   expiration: Date | null,
-  plan_actuel: string
+  plan_actuel: string,
+  email_patron?: string
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -58,6 +60,28 @@ export default function EtablissementActionsClient({
     }
   }
 
+  async function handleResetCredentials() {
+    const newEmail = prompt("Nouvel email de connexion pour le Patron:", email_patron || "");
+    if (newEmail === null) return; // Annulé
+    
+    if (!newEmail.trim()) {
+      alert("L'email ne peut pas être vide.");
+      return;
+    }
+
+    const newPassword = prompt("Nouveau mot de passe (laisser vide pour ne pas le changer):");
+    if (newPassword === null) return; // Annulé
+
+    setLoading(true);
+    const result = await resetEtablissementCredentials(id, newEmail.trim(), newPassword);
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      alert("Les accès ont été modifiés avec succès.");
+    }
+    setLoading(false);
+  }
+
   return (
     <div className="flex justify-end gap-2 items-center flex-wrap">
       {plan_actuel === "Standard" && (
@@ -69,6 +93,14 @@ export default function EtablissementActionsClient({
           Passer en PRO
         </button>
       )}
+
+      <button 
+        onClick={handleResetCredentials}
+        disabled={loading}
+        className="px-3 py-1.5 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200 rounded-lg text-xs font-semibold transition-all disabled:opacity-50 shadow-sm"
+      >
+        Modifier Accès
+      </button>
 
       <button 
         onClick={handleImpersonate}
