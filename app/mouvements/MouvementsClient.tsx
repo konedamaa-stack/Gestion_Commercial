@@ -19,7 +19,7 @@ export function MouvementsClient({ produits, stocks, utilisateurs, fournisseurs 
 
   return (
     <>
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 items-start">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Mouvements de Stock</h1>
           <p className="mt-2 text-slate-500">

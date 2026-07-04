@@ -11,7 +11,7 @@ export function FournisseursClient() {
 
   return (
     <>
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 items-start">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Fournisseurs</h1>
           <p className="mt-2 text-slate-500">
