@@ -11,21 +11,13 @@ export function StocksClient({ stocks }: { stocks: any[] }) {
 
   return (
     <>
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Points de Stockage</h1>
-          <p className="mt-2 text-slate-500">
-            Gérez vos entrepôts, boutiques et réserves.
-          </p>
-        </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors flex items-center gap-2"
-        >
-          <Plus className="h-4 w-4" />
-          Ajouter un Stock
-        </button>
-      </div>
+      <button 
+        onClick={() => setIsModalOpen(true)}
+        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-500/20 hover:bg-indigo-500 transition-colors flex items-center gap-2"
+      >
+        <Plus className="h-4 w-4" />
+        Ajouter un Stock
+      </button>
 
       <Modal 
         isOpen={isModalOpen} 
