@@ -13,7 +13,8 @@ export default async function CreditsPage() {
   const commandesNonSoldees = await prisma.commande.findMany({
     where: {
       etablissement_id: session.etablissement_id!,
-      statut_paiement: { in: ["NON_PAYE", "PARTIEL"] }
+      statut_paiement: { in: ["NON_PAYE", "PARTIEL"] },
+      ...(session.role === "VENDEUR" ? { vendeur_id: session.userId } : {})
     },
     include: {
       client: true,

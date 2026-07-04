@@ -23,7 +23,10 @@ export default async function DashboardPage() {
       include: { categorie: true } 
     }),
     prisma.mouvementStock.findMany({
-      where: { etablissement_id: session.etablissement_id! },
+      where: { 
+        etablissement_id: session.etablissement_id!,
+        ...(userRole === "VENDEUR" ? { utilisateur_id: session.userId } : {})
+      },
       take: 20,
       orderBy: { date_mouvement: 'desc' },
       include: { produit: { include: { categorie: true } }, stock_source: true, stock_destination: true, utilisateur: true }
@@ -35,11 +38,17 @@ export default async function DashboardPage() {
       } 
     }),
     prisma.commande.findMany({
-      where: { etablissement_id: session.etablissement_id! },
+      where: { 
+        etablissement_id: session.etablissement_id!,
+        ...(userRole === "VENDEUR" ? { vendeur_id: session.userId } : {})
+      },
       include: { lignes: true, client: true, vendeur: true }
     }),
     prisma.depense.findMany({
-      where: { etablissement_id: session.etablissement_id! }
+      where: { 
+        etablissement_id: session.etablissement_id!,
+        ...(userRole === "VENDEUR" ? { enregistre_par_id: session.userId } : {})
+      }
     })
   ]);
 

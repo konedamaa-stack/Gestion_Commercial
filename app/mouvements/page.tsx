@@ -17,7 +17,10 @@ export default async function MouvementsPage({
 
   const resolvedParams = await searchParams;
 
-  const whereClause: any = { etablissement_id: session.etablissement_id! };
+  const whereClause: any = { 
+    etablissement_id: session.etablissement_id!,
+    ...(userRole === "VENDEUR" ? { utilisateur_id: session.userId } : {})
+  };
 
   if (resolvedParams.type) {
     whereClause.type = resolvedParams.type;

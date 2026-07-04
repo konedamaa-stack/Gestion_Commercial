@@ -10,7 +10,10 @@ export default async function DepensesPage() {
   if (!session) redirect("/login");
 
   const depenses = await prisma.depense.findMany({
-    where: { etablissement_id: session.etablissement_id! },
+    where: { 
+      etablissement_id: session.etablissement_id!,
+      ...(session.role === "VENDEUR" ? { enregistre_par_id: session.userId } : {})
+    },
     include: { enregistre_par: true },
     orderBy: { date_depense: 'desc' }
   });

@@ -55,7 +55,10 @@ export default async function VentesPage() {
 
   // Historique des ventes
   const commandes = await prisma.commande.findMany({
-    where: { etablissement_id: session.etablissement_id! },
+    where: { 
+      etablissement_id: session.etablissement_id!,
+      ...(session.role === "VENDEUR" ? { vendeur_id: session.userId } : {})
+    },
     include: {
       client: true,
       vendeur: true,
