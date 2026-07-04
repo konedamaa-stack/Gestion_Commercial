@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
@@ -11,15 +12,22 @@ export async function GET() {
     });
 
     if (existingAdmin) {
-      return NextResponse.json({ message: "Le Super Admin existe déjà." });
+      // S'il existe déjà mais avec un mot de passe non haché, on le met à jour
+      const hashedPassword = await bcrypt.hash("superadmin", 10);
+      await prisma.utilisateur.update({
+        where: { id: existingAdmin.id },
+        data: { mot_de_passe: hashedPassword },
+      });
+      return NextResponse.json({ message: "Le Super Admin existait déjà, son mot de passe a été corrigé et haché avec succès." });
     }
 
     // Créer le Super Admin
+    const hashedPassword = await bcrypt.hash("superadmin", 10);
     const admin = await prisma.utilisateur.create({
       data: {
         nom: "Super Admin",
         email: "konedamaa1@gmail.com",
-        mot_de_passe: "superadmin", // Vous pourrez le changer plus tard
+        mot_de_passe: hashedPassword, // Mot de passe haché !
         role: "SUPER_ADMIN",
         est_verifie: true,
       },
