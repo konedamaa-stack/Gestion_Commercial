@@ -68,22 +68,27 @@ export function MouvementsClient({ produits, stocks, utilisateurs }: DataProps) 
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                {type === "VENTE" ? "Stock Source (Interne)" : "Source (Fournisseur/Stock)"}
-              </label>
-              <select name="stock_source_id" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
-                {stocks.map(s => <option key={s.id} value={s.id}>{s.nom}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                {type === "ACHAT" ? "Stock Dest. (Interne)" : "Destination (Client/Stock)"}
-              </label>
-              <select name="stock_destination_id" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
-                {stocks.map(s => <option key={s.id} value={s.id}>{s.nom}</option>)}
-              </select>
-            </div>
+            {type !== "ACHAT" && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Stock Source (Interne)
+                </label>
+                <select name="stock_source_id" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
+                  {stocks.map(s => <option key={s.id} value={s.id}>{s.nom}</option>)}
+                </select>
+              </div>
+            )}
+            
+            {type !== "VENTE" && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Stock Destination (Interne)
+                </label>
+                <select name="stock_destination_id" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
+                  {stocks.map(s => <option key={s.id} value={s.id}>{s.nom}</option>)}
+                </select>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">

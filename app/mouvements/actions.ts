@@ -10,14 +10,24 @@ export async function addMouvement(formData: FormData) {
 
   const type = formData.get("type") as string;
   const produit_id = formData.get("produit_id") as string;
-  const stock_source_id = formData.get("stock_source_id") as string;
-  const stock_destination_id = formData.get("stock_destination_id") as string;
+  const stock_source_id = formData.get("stock_source_id") as string | null;
+  const stock_destination_id = formData.get("stock_destination_id") as string | null;
   const quantite = parseInt(formData.get("quantite") as string, 10);
   const prix_unitaire = parseInt(formData.get("prix_unitaire") as string, 10);
   const utilisateur_id = session.userId;
 
-  if (!produit_id || !stock_source_id || !stock_destination_id || isNaN(quantite) || isNaN(prix_unitaire)) {
+  if (!produit_id || isNaN(quantite) || isNaN(prix_unitaire)) {
     throw new Error("Tous les champs sont requis et doivent être valides.");
+  }
+  
+  if (type === "TRANSFERT" && (!stock_source_id || !stock_destination_id)) {
+    throw new Error("Un transfert nécessite un stock source et un stock destination.");
+  }
+  if (type === "ACHAT" && !stock_destination_id) {
+    throw new Error("Un achat nécessite un stock de destination.");
+  }
+  if (type === "VENTE" && !stock_source_id) {
+    throw new Error("Une vente nécessite un stock source.");
   }
 
   await prisma.mouvementStock.create({
