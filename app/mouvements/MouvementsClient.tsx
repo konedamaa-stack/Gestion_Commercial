@@ -71,7 +71,7 @@ export function MouvementsClient({ produits, stocks, utilisateurs }: DataProps) 
             {type !== "ACHAT" && (
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Stock Source (Interne)
+                  Lieu de départ (Boutique/Entrepôt)
                 </label>
                 <select name="stock_source_id" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
                   {stocks.map(s => <option key={s.id} value={s.id}>{s.nom}</option>)}
@@ -82,7 +82,7 @@ export function MouvementsClient({ produits, stocks, utilisateurs }: DataProps) 
             {type !== "VENTE" && (
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">
-                  Stock Destination (Interne)
+                  Lieu d'arrivée (Boutique/Entrepôt)
                 </label>
                 <select name="stock_destination_id" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
                   {stocks.map(s => <option key={s.id} value={s.id}>{s.nom}</option>)}
