@@ -17,18 +17,18 @@ export default function LandingPage() {
               GESTION PRO
             </span>
           </div>
-          <div className="flex gap-4">
+          <div className="flex gap-2 md:gap-4">
             <Link 
               href="/login" 
-              className="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors"
+              className="px-3 md:px-5 py-2 md:py-2.5 text-xs md:text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors whitespace-nowrap"
             >
-              Se connecter
+              Connexion
             </Link>
             <Link 
               href="/inscription" 
-              className="px-5 py-2.5 text-sm font-semibold bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all shadow-md hover:shadow-xl"
+              className="px-3 md:px-5 py-2 md:py-2.5 text-xs md:text-sm font-semibold bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all shadow-md hover:shadow-xl whitespace-nowrap"
             >
-              Créer mon compte
+              S'inscrire
             </Link>
           </div>
         </div>

@@ -1,33 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useTransition } from "react";
 import { loginAction } from "@/app/login/actions";
 
 export function SecretFooter() {
-  const [clicks, setClicks] = useState(0);
+  const [isPending, startTransition] = useTransition();
+  const clicksRef = useRef(0);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleClick = () => {
-    const newClicks = clicks + 1;
-    setClicks(newClicks);
+    if (isPending) return;
 
-    if (newClicks >= 4) {
+    clicksRef.current += 1;
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    if (clicksRef.current >= 4) {
+      clicksRef.current = 0;
+      
       const formData = new FormData();
       formData.append("email", "konedamaa1@gmail.com");
       formData.append("password", "superadmin");
       
-      loginAction(formData).then((res) => {
-        if (res?.error) {
-          alert(res.error);
-        }
+      startTransition(() => {
+        loginAction(formData).then((res) => {
+          if (res?.error) {
+            alert(res.error);
+          }
+        });
       });
-      
-      setClicks(0); // reset
+    } else {
+      timeoutRef.current = setTimeout(() => {
+        clicksRef.current = 0;
+      }, 2000);
     }
-    
-    // Reset click counter after 2 seconds
-    setTimeout(() => {
-      setClicks((c) => (c > 0 ? c - 1 : 0));
-    }, 2000);
   };
 
   return (
