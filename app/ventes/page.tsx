@@ -106,6 +106,7 @@ export default async function VentesPage() {
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Statut</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Vendeur</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
+                <th className="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-slate-200">
@@ -134,6 +135,12 @@ export default async function VentesPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                     {new Date(cmd.createdAt).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <Link href={`/facture/${cmd.id}`} className="text-blue-600 hover:text-blue-900 flex items-center justify-end gap-1">
+                      <Receipt className="w-4 h-4" />
+                      <span className="hidden sm:inline">Facture</span>
+                    </Link>
                   </td>
                 </tr>
               ))}
