@@ -4,12 +4,13 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import ClientPrintButton from "./ClientPrintButton";
 
-export default async function FacturePage({ params }: { params: { id: string } }) {
+export default async function FacturePage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getSession();
   if (!session) redirect("/login");
 
   const commande = await prisma.commande.findUnique({
-    where: { id: params.id },
+    where: { id: id },
     include: {
       client: true,
       vendeur: true,
