@@ -22,11 +22,9 @@ export async function addClient(formData: FormData) {
   });
 
   if (etablissement?.plan_actuel === "Standard") {
-    const clientsCount = await prisma.stock.count({
+    const clientsCount = await prisma.client.count({
       where: { 
-        etablissement_id: session.etablissement_id!,
-        est_externe: true,
-        nom: { startsWith: "Client" }
+        etablissement_id: session.etablissement_id!
       }
     });
 
@@ -35,16 +33,12 @@ export async function addClient(formData: FormData) {
     }
   }
 
-  // Préfixer le nom pour le distinguer des fournisseurs
-  const nomClient = nom.toLowerCase().startsWith("client") ? nom : `Client - ${nom}`;
-
-  await prisma.stock.create({
+  await prisma.client.create({
     data: {
       etablissement_id: session.etablissement_id!,
-      nom: nomClient,
+      nom: nom,
       adresse: adresse || null,
       telephone: telephone || null,
-      est_externe: true,
     },
   });
 
@@ -62,15 +56,13 @@ export async function updateClient(formData: FormData) {
 
   if (!id || !nom) throw new Error("ID et Nom requis");
 
-  const nomClient = nom.toLowerCase().startsWith("client") ? nom : `Client - ${nom}`;
-
-  await prisma.stock.update({
+  await prisma.client.update({
     where: { 
       id,
       etablissement_id: session.etablissement_id!
     },
     data: {
-      nom: nomClient,
+      nom: nom,
       adresse: adresse || null,
       telephone: telephone || null,
     },
@@ -82,7 +74,7 @@ export async function deleteClient(id: string) {
   const session = await getSession();
   if (session?.role !== "PATRON") throw new Error("Accès refusé : Seul le patron peut supprimer un client");
 
-  await prisma.stock.delete({
+  await prisma.client.delete({
     where: { 
       id,
       etablissement_id: session.etablissement_id!

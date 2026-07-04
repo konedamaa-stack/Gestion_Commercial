@@ -10,11 +10,9 @@ export default async function FournisseursPage() {
   if (!session) redirect("/login");
   if (session.role === "VENDEUR") redirect("/");
 
-  const fournisseurs = await prisma.stock.findMany({
+  const fournisseurs = await prisma.fournisseur.findMany({
     where: { 
-      etablissement_id: session.etablissement_id!,
-      est_externe: true,
-      nom: { startsWith: "Fournisseur" }
+      etablissement_id: session.etablissement_id!
     },
     orderBy: { createdAt: 'desc' }
   });

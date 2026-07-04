@@ -16,16 +16,12 @@ export async function addFournisseur(formData: FormData) {
     throw new Error("Le nom est requis");
   }
 
-  // Préfixer le nom pour le distinguer des clients
-  const nomFournisseur = nom.toLowerCase().startsWith("fournisseur") ? nom : `Fournisseur - ${nom}`;
-
-  await prisma.stock.create({
+  await prisma.fournisseur.create({
     data: {
       etablissement_id: session.etablissement_id!,
-      nom: nomFournisseur,
+      nom: nom,
       adresse: adresse || null,
       telephone: telephone || null,
-      est_externe: true,
     },
   });
 
@@ -43,15 +39,13 @@ export async function updateFournisseur(formData: FormData) {
 
   if (!id || !nom) throw new Error("ID et Nom requis");
 
-  const nomFournisseur = nom.toLowerCase().startsWith("fournisseur") ? nom : `Fournisseur - ${nom}`;
-
-  await prisma.stock.update({
+  await prisma.fournisseur.update({
     where: { 
       id,
       etablissement_id: session.etablissement_id!
     },
     data: {
-      nom: nomFournisseur,
+      nom: nom,
       adresse: adresse || null,
       telephone: telephone || null,
     },
@@ -63,7 +57,7 @@ export async function deleteFournisseur(id: string) {
   const session = await getSession();
   if (session?.role !== "PATRON") throw new Error("Accès refusé : Seul le patron peut supprimer un fournisseur");
 
-  await prisma.stock.delete({
+  await prisma.fournisseur.delete({
     where: { 
       id,
       etablissement_id: session.etablissement_id!

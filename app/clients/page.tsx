@@ -10,11 +10,9 @@ export default async function ClientsPage() {
   if (!session) redirect("/login");
   const userRole = session.role;
 
-  const clients = await prisma.stock.findMany({
+  const clients = await prisma.client.findMany({
     where: { 
-      etablissement_id: session.etablissement_id!,
-      est_externe: true,
-      nom: { startsWith: "Client" }
+      etablissement_id: session.etablissement_id!
     },
     orderBy: { createdAt: 'desc' }
   });
