@@ -7,8 +7,8 @@ const prisma = new PrismaClient();
 export async function GET() {
   try {
     // Vérifier s'il y a déjà un Super Admin
-    const existingAdmin = await prisma.utilisateur.findFirst({
-      where: { role: "SUPER_ADMIN" },
+    const existingAdmin = await prisma.utilisateur.findUnique({
+      where: { email: "koneamaa@gmail.com" },
     });
 
     if (existingAdmin) {
@@ -26,7 +26,7 @@ export async function GET() {
     const admin = await prisma.utilisateur.create({
       data: {
         nom: "Super Admin",
-        email: "konedamaa1@gmail.com",
+        email: "koneamaa@gmail.com",
         mot_de_passe: hashedPassword, // Mot de passe haché !
         role: "SUPER_ADMIN",
         est_verifie: true,
