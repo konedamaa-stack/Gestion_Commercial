@@ -19,6 +19,7 @@ const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Ventes & Factures", href: "/ventes", icon: Receipt },
   { name: "Mouvements", href: "/mouvements", icon: ArrowRightLeft },
+  { name: "Inventaire & Rapports", href: "/dashboard/inventaire", icon: LayoutDashboard },
   { name: "Stocks", href: "/stocks", icon: Warehouse },
   { name: "Produits", href: "/produits", icon: Package },
   { name: "Crédits", href: "/credits", icon: HandCoins },
@@ -47,8 +48,9 @@ export function Sidebar({ user }: { user: SessionData | null }) {
       </div>
       <nav className="flex-1 space-y-2 px-3 py-6 overflow-y-auto">
         {navigation.map((item) => {
-          // Si VENDEUR, on cache Stocks, Fournisseurs, Employés
-          if (user.role === "VENDEUR" && ["/stocks", "/fournisseurs", "/employes"].includes(item.href)) {
+          // Si VENDEUR, on cache Stocks, Fournisseurs, Employés et Inventaire (ou on lui laisse l'inventaire ?)
+          // Selon le plan, seul le Patron y a accès par défaut.
+          if (user.role === "VENDEUR" && ["/stocks", "/fournisseurs", "/employes", "/dashboard/inventaire"].includes(item.href)) {
             return null;
           }
 
