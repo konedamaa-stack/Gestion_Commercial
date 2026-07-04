@@ -28,6 +28,7 @@ export async function addEmploye(formData: FormData) {
       mot_de_passe: hashedPassword,
       role: role || "VENDEUR",
       stock_id: stock_id || null,
+      est_verifie: true,
     },
   });
 
@@ -43,22 +44,27 @@ export async function updateEmploye(formData: FormData) {
   const email = formData.get("email") as string;
   const role = formData.get("role") as string;
   const stock_id = formData.get("stock_id") as string | null;
-  // Note: mot de passe n'est pas modifié ici pour des raisons de simplicité
-  // Dans un vrai système, on utiliserait une route spécifique pour le mdp.
+  const mot_de_passe = formData.get("mot_de_passe") as string | null;
 
   if (!id || !nom || !email) throw new Error("ID, Nom et Email requis");
+
+  const dataToUpdate: any = {
+    nom,
+    email,
+    role: role || "VENDEUR",
+    stock_id: stock_id || null,
+  };
+
+  if (mot_de_passe && mot_de_passe.trim() !== "") {
+    dataToUpdate.mot_de_passe = await bcrypt.hash(mot_de_passe, 10);
+  }
 
   await prisma.utilisateur.update({
     where: { 
       id,
       etablissement_id: session.etablissement_id!
     },
-    data: {
-      nom,
-      email,
-      role: role || "VENDEUR",
-      stock_id: stock_id || null,
-    },
+    data: dataToUpdate,
   });
   revalidatePath("/employes");
 }

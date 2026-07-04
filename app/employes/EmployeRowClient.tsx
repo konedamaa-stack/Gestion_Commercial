@@ -84,6 +84,11 @@ export function EmployeRowClient({ employe, stocks }: { employe: any, stocks: an
           </div>
 
           <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Mot de passe</label>
+            <input type="password" name="mot_de_passe" placeholder="Laisser vide pour ne pas changer" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+          </div>
+
+          <div>
             <label className="block text-sm font-medium text-slate-700 mb-1">Assigner à un stock (Optionnel)</label>
             <select name="stock_id" defaultValue={employe.stock_id || ""} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
               <option value="">-- Non assigné (Accès global) --</option>
