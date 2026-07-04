@@ -40,16 +40,14 @@ export function Sidebar({ user }: { user: SessionData | null }) {
   if (user.role === "SUPER_ADMIN") return null; // Le Super Admin a sa propre sidebar dans app/super-admin/layout.tsx
 
   return (
-    <div className="flex h-full w-64 flex-col bg-slate-900 text-white shadow-xl">
-      <div className="flex h-16 items-center justify-center border-b border-slate-800">
-        <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400 tracking-wider">
+    <div className="flex h-full w-64 flex-col bg-slate-950 text-white shadow-2xl border-r border-slate-800/50 relative z-20">
+      <div className="flex h-16 items-center justify-center border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-md sticky top-0 z-10">
+        <h1 className="text-xl font-black tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 drop-shadow-sm">
           GESTION PRO
         </h1>
       </div>
-      <nav className="flex-1 space-y-2 px-3 py-6 overflow-y-auto">
+      <nav className="flex-1 space-y-1.5 px-3 py-6 overflow-y-auto custom-scrollbar">
         {navigation.map((item) => {
-          // Si VENDEUR, on cache Stocks, Fournisseurs, Employés et Inventaire (ou on lui laisse l'inventaire ?)
-          // Selon le plan, seul le Patron y a accès par défaut.
           if (user.role === "VENDEUR" && ["/stocks", "/fournisseurs", "/employes", "/dashboard/inventaire"].includes(item.href)) {
             return null;
           }
@@ -59,41 +57,47 @@ export function Sidebar({ user }: { user: SessionData | null }) {
             <Link
               key={item.name}
               href={item.href}
-              className={`group flex items-center rounded-lg px-3 py-3 text-sm font-medium transition-all duration-200 ${
+              className={`group flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300 relative overflow-hidden ${
                 isActive
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-900/20"
-                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                  ? "text-white shadow-lg shadow-indigo-500/20"
+                  : "text-slate-400 hover:text-white"
               }`}
             >
+              {isActive && (
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-indigo-600 opacity-100 transition-opacity duration-300" />
+              )}
+              {!isActive && (
+                <div className="absolute inset-0 bg-slate-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              )}
               <item.icon
-                className={`mr-3 h-5 w-5 flex-shrink-0 transition-colors ${
-                  isActive ? "text-white" : "text-slate-400 group-hover:text-blue-400"
+                className={`mr-3 h-5 w-5 flex-shrink-0 transition-transform duration-300 relative z-10 ${
+                  isActive ? "text-white scale-110" : "text-slate-500 group-hover:text-indigo-400 group-hover:scale-110"
                 }`}
                 aria-hidden="true"
               />
-              {item.name}
+              <span className="relative z-10">{item.name}</span>
             </Link>
           );
         })}
       </nav>
-      <div className="border-t border-slate-800 p-4 bg-slate-950/50 flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-sm font-bold shadow-inner">
+      <div className="border-t border-slate-800/50 p-4 bg-slate-950 flex flex-col gap-4">
+        <div className="flex items-center gap-3 p-2 rounded-xl bg-slate-900/50 border border-slate-800/50">
+          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-sm font-bold shadow-inner border border-indigo-400/20 text-white">
             {user.nom.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-slate-200 truncate">{user.nom}</p>
-            <p className="text-xs text-slate-500 truncate">{user.role}</p>
+            <p className="text-sm font-bold text-slate-200 truncate">{user.nom}</p>
+            <p className="text-xs text-indigo-400 truncate uppercase tracking-wider font-semibold">{user.role}</p>
           </div>
         </div>
         
-        <Link href="/profil" className="w-full flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors">
+        <Link href="/profil" className="w-full flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all duration-200 border border-transparent hover:border-slate-700">
           <Settings className="h-4 w-4" />
           Mon Profil
         </Link>
         <form action={logoutAction}>
-          <button type="submit" className="w-full flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors border border-slate-800">
-            <LogOut className="h-4 w-4" />
+          <button type="submit" className="w-full flex items-center justify-center gap-2 py-2 px-3 text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-950/30 rounded-lg transition-all duration-200 border border-transparent hover:border-red-900/50 group">
+            <LogOut className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Déconnexion
           </button>
         </form>
