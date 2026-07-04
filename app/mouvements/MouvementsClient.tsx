@@ -10,9 +10,10 @@ interface DataProps {
   produits: any[];
   stocks: any[];
   utilisateurs: any[];
+  fournisseurs: any[];
 }
 
-export function MouvementsClient({ produits, stocks, utilisateurs }: DataProps) {
+export function MouvementsClient({ produits, stocks, utilisateurs, fournisseurs }: DataProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [type, setType] = useState("ACHAT"); // ACHAT, VENTE, TRANSFERT
 
@@ -75,6 +76,18 @@ export function MouvementsClient({ produits, stocks, utilisateurs }: DataProps) 
                 </label>
                 <select name="stock_source_id" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
                   {stocks.map(s => <option key={s.id} value={s.id}>{s.nom}</option>)}
+                </select>
+              </div>
+            )}
+
+            {type === "ACHAT" && (
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Fournisseur (Optionnel)
+                </label>
+                <select name="fournisseur_id" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
+                  <option value="">Sélectionner un fournisseur...</option>
+                  {fournisseurs.map(f => <option key={f.id} value={f.id}>{f.nom}</option>)}
                 </select>
               </div>
             )}

@@ -12,6 +12,7 @@ export async function addMouvement(formData: FormData) {
   const produit_id = formData.get("produit_id") as string;
   const stock_source_id = formData.get("stock_source_id") as string | null;
   const stock_destination_id = formData.get("stock_destination_id") as string | null;
+  const fournisseur_id = formData.get("fournisseur_id") as string | null;
   const quantite = parseInt(formData.get("quantite") as string, 10);
   const prix_unitaire = parseInt(formData.get("prix_unitaire") as string, 10);
   const utilisateur_id = session.userId;
@@ -37,6 +38,7 @@ export async function addMouvement(formData: FormData) {
       produit_id,
       stock_source_id,
       stock_destination_id,
+      fournisseur_id: fournisseur_id || undefined,
       quantite,
       prix_unitaire_applique: prix_unitaire,
       utilisateur_id,

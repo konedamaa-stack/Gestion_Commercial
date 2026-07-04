@@ -51,6 +51,7 @@ export default async function MouvementsPage({
       stock_source: true,
       stock_destination: true,
       utilisateur: true,
+      fournisseur: true,
     },
     orderBy: { date_mouvement: 'desc' }
   });
@@ -58,10 +59,11 @@ export default async function MouvementsPage({
   const produits = await prisma.produit.findMany({ where: { etablissement_id: session.etablissement_id! } });
   const stocks = await prisma.stock.findMany({ where: { etablissement_id: session.etablissement_id!, est_externe: false } });
   const utilisateurs = await prisma.utilisateur.findMany({ where: { etablissement_id: session.etablissement_id! } });
+  const fournisseurs = await prisma.fournisseur.findMany({ where: { etablissement_id: session.etablissement_id! } });
 
   return (
     <div className="p-4 md:p-8">
-      <MouvementsClient produits={produits} stocks={stocks} utilisateurs={utilisateurs} />
+      <MouvementsClient produits={produits} stocks={stocks} utilisateurs={utilisateurs} fournisseurs={fournisseurs} />
       
       <MouvementsFilter />
 

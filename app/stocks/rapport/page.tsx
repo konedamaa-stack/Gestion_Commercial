@@ -9,13 +9,14 @@ import { RapportFilter } from "./RapportFilter";
 export default async function RapportInventairePage({
   searchParams,
 }: {
-  searchParams: { debut?: string; fin?: string; stock_id?: string };
+  searchParams: Promise<{ debut?: string; fin?: string; stock_id?: string }>;
 }) {
   const session = await getSession();
   if (!session) redirect("/login");
   if (session.role === "VENDEUR") redirect("/");
 
-  const { debut, fin, stock_id } = searchParams;
+  const resolvedSearchParams = await searchParams;
+  const { debut, fin, stock_id } = resolvedSearchParams;
 
   // Récupérer les stocks internes
   const stocks = await prisma.stock.findMany({

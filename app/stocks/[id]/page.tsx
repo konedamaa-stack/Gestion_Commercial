@@ -5,12 +5,14 @@ import { Package, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { formatNumber } from "@/lib/format";
 
-export default async function StockInventoryPage({ params }: { params: { id: string } }) {
+export default async function StockInventoryPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session) redirect("/login");
 
+  const resolvedParams = await params;
+
   const stock = await prisma.stock.findFirst({
-    where: { id: params.id, etablissement_id: session.etablissement_id! }
+    where: { id: resolvedParams.id, etablissement_id: session.etablissement_id! }
   });
 
   if (!stock) {

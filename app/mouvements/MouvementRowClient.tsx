@@ -39,11 +39,15 @@ export function MouvementRowClient({
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
           <span className="font-medium text-slate-900">
-            {mvt.stock_source ? mvt.stock_source.nom.replace('Fournisseur - ', '').replace('Client - ', '') : 'Externe (Fournisseur)'}
+            {mvt.type === 'ACHAT' 
+              ? (mvt.fournisseur ? mvt.fournisseur.nom : 'Fournisseur')
+              : (mvt.stock_source ? mvt.stock_source.nom : 'Externe')}
           </span>
           <span className="mx-2 text-slate-400">→</span>
           <span className="font-medium text-slate-900">
-            {mvt.stock_destination ? mvt.stock_destination.nom.replace('Fournisseur - ', '').replace('Client - ', '') : 'Externe (Client)'}
+            {mvt.type === 'VENTE'
+              ? 'Client'
+              : (mvt.stock_destination ? mvt.stock_destination.nom : 'Externe')}
           </span>
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-slate-900">
