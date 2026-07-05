@@ -94,13 +94,15 @@ export function VentesClient({ produits, stocks, clients, userRole, inventaire }
 
   return (
     <>
-      <button 
-        onClick={() => setIsOpen(true)}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
-      >
-        <ShoppingCart className="h-5 w-5" />
-        Nouvelle Vente
-      </button>
+      <div className="w-full sm:w-auto">
+        <button 
+          onClick={() => setIsOpen(true)}
+          className="w-full sm:w-auto justify-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+        >
+          <ShoppingCart className="h-5 w-5" />
+          Nouvelle Vente
+        </button>
+      </div>
 
       {isOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">

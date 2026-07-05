@@ -19,16 +19,10 @@ export function MouvementsClient({ produits, stocks, utilisateurs, fournisseurs 
 
   return (
     <>
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 items-start">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Mouvements de Stock</h1>
-          <p className="mt-2 text-slate-500">
-            Historique des achats, ventes et transferts.
-          </p>
-        </div>
+      <div className="w-full sm:w-auto">
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors flex items-center gap-2"
+          className="w-full sm:w-auto justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
           Nouveau Mouvement

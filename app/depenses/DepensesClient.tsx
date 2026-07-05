@@ -49,13 +49,15 @@ export function DepensesClient({ userRole }: { userRole: string }) {
 
   return (
     <>
-      <button 
-        onClick={() => setIsOpen(true)}
-        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
-      >
-        <Plus className="h-5 w-5" />
-        Nouvelle Dépense
-      </button>
+      <div className="w-full sm:w-auto">
+        <button 
+          onClick={() => setIsOpen(true)}
+          className="w-full sm:w-auto justify-center bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+        >
+          <Plus className="h-5 w-5" />
+          Nouvelle Dépense
+        </button>
+      </div>
 
       {isOpen && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">

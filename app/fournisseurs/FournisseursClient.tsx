@@ -11,16 +11,10 @@ export function FournisseursClient() {
 
   return (
     <>
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 items-start">
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Fournisseurs</h1>
-          <p className="mt-2 text-slate-500">
-            Gérez vos partenaires et fournisseurs externes.
-          </p>
-        </div>
+      <div className="w-full sm:w-auto">
         <button 
           onClick={() => setIsModalOpen(true)}
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors flex items-center gap-2"
+          className="w-full sm:w-auto justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
           Ajouter un Fournisseur

@@ -14,10 +14,10 @@ export function ProduitsClient({ categories, userRole }: { categories: any[], us
   if (userRole === "VENDEUR") return null;
 
   return (
-    <div className="flex gap-3">
+    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
       <button 
         onClick={() => setIsCatModalOpen(true)}
-        className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-200 transition-colors flex items-center gap-2 border border-slate-200"
+        className="w-full sm:w-auto justify-center rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-200 transition-colors flex items-center gap-2 border border-slate-200"
       >
         <Tags className="h-4 w-4" />
         Ajouter Catégorie
@@ -25,7 +25,7 @@ export function ProduitsClient({ categories, userRole }: { categories: any[], us
 
       <button 
         onClick={() => setIsModalOpen(true)}
-        className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors flex items-center gap-2"
+        className="w-full sm:w-auto justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 transition-colors flex items-center gap-2"
       >
         <Plus className="h-4 w-4" />
         Ajouter Produit

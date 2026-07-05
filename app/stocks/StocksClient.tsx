@@ -11,13 +11,15 @@ export function StocksClient({ stocks }: { stocks: any[] }) {
 
   return (
     <>
-      <button 
-        onClick={() => setIsModalOpen(true)}
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-500/20 hover:bg-indigo-500 transition-colors flex items-center gap-2"
-      >
-        <Plus className="h-4 w-4" />
-        Ajouter un Stock
-      </button>
+      <div className="w-full sm:w-auto">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="w-full sm:w-auto justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-500/20 hover:bg-indigo-500 transition-colors flex items-center gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Ajouter un Stock
+        </button>
+      </div>
 
       <Modal 
         isOpen={isModalOpen} 
