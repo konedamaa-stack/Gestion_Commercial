@@ -104,6 +104,17 @@ export function ProduitsClient({ categories, userRole }: { categories: any[], us
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Seuil Alerte Stock</label>
+              <input type="number" name="seuil_alerte_stock" defaultValue="10" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Image du Produit (Opt)</label>
+              <input type="file" name="imageFile" accept="image/*" className="w-full px-3 py-1.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-4 pt-2">
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
               <h4 className="text-xs font-bold text-slate-500 uppercase mb-3">Prix d'Achat</h4>

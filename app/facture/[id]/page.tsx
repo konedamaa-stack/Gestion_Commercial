@@ -38,7 +38,7 @@ export default async function FacturePage({ params }: { params: Promise<{ id: st
         <Link href="/ventes" className="text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors">
           &larr; Retour aux ventes
         </Link>
-        <ClientPrintButton />
+        <ClientPrintButton factureId={id} />
       </div>
 
       {/* Conteneur Facture format A4 */}

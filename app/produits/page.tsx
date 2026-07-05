@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Package, Search } from "lucide-react";
 import { ProduitsClient } from "./ProduitsClient";
 import { ProduitRowClient } from "./ProduitRowClient";
+import { ExportButton } from "@/components/ExportButton";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 
@@ -39,7 +40,23 @@ export default async function ProduitsPage() {
             Gérez votre inventaire, les catégories et les prix de base.
           </p>
         </div>
-        <ProduitsClient categories={categories} userRole={userRole} />
+        <div className="flex flex-col sm:flex-row gap-2">
+          {userRole === "PATRON" && (
+            <ExportButton 
+              data={produits} 
+              filename="Catalogue_Produits" 
+              columns={[
+                { header: "Nom du Produit", key: "nom" },
+                { header: "Code Barre", key: "code_barre" },
+                { header: "Catégorie", key: "categorie.nom" },
+                { header: "Prix Achat Gros", key: "prix_achat_gros" },
+                { header: "Prix Vente Gros", key: "prix_vente_gros" },
+                { header: "Seuil Alerte Stock", key: "seuil_alerte_stock" }
+              ]} 
+            />
+          )}
+          <ProduitsClient categories={categories} userRole={userRole} />
+        </div>
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">

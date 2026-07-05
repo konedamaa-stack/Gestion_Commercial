@@ -82,6 +82,9 @@ model Produit {
   etablissement_id  String
   etablissement     Etablissement   @relation(fields: [etablissement_id], references: [id], onDelete: Cascade)
   
+  imageUrl          String?
+  seuil_alerte_stock Int            @default(10)
+  
   categorie_id      String
   categorie         Categorie       @relation(fields: [categorie_id], references: [id])
   

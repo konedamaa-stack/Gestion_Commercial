@@ -210,7 +210,12 @@ export function VentesClient({ produits, stocks, clients, userRole, inventaire }
                     </div>
                   ) : (
                     panier.map((p, i) => (
-                      <div key={i} className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm flex items-center justify-between gap-2">
+                      <div key={i} className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm flex items-center justify-between gap-3">
+                        {p.imageUrl ? (
+                          <img src={p.imageUrl} alt={p.nom} className="w-12 h-12 rounded object-cover border border-slate-200 bg-slate-50 flex-shrink-0" />
+                        ) : (
+                          <div className="w-12 h-12 rounded border border-slate-200 bg-slate-50 flex items-center justify-center text-slate-400 text-[10px] flex-shrink-0">IMG</div>
+                        )}
                         <div className="flex-1">
                           <div className="font-bold text-slate-800">{p.nom}</div>
                           <div className="flex flex-wrap items-center gap-2 mt-1">

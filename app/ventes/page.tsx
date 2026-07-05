@@ -4,6 +4,7 @@ import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { VentesClient } from "./VentesClient";
 import Link from "next/link";
+import { ExportButton } from "@/components/ExportButton";
 
 export default async function VentesPage() {
   const session = await getSession();
@@ -84,8 +85,26 @@ export default async function VentesPage() {
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden mt-8">
-        <div className="border-b border-slate-200 bg-slate-50/50 p-4 flex justify-between items-center">
-          <h2 className="font-semibold text-slate-800">Historique des ventes</h2>
+        <div className="border-b border-slate-200 bg-slate-50/50 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex items-center gap-4">
+            <h2 className="font-semibold text-slate-800">Historique des ventes</h2>
+            {session.role === "PATRON" && (
+              <ExportButton 
+                data={commandes} 
+                filename="Historique_Ventes" 
+                columns={[
+                  { header: "Facture N°", key: "numero_facture" },
+                  { header: "Date", key: "createdAt" },
+                  { header: "Type", key: "type_vente" },
+                  { header: "Client", key: "client.nom" },
+                  { header: "Vendeur", key: "vendeur.nom" },
+                  { header: "Statut", key: "statut_paiement" },
+                  { header: "Montant Total", key: "montant_total" },
+                  { header: "Montant Payé", key: "montant_paye" }
+                ]} 
+              />
+            )}
+          </div>
           <div className="relative max-w-sm w-full">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input 

@@ -3,6 +3,19 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/session";
+import { promises as fs } from "fs";
+import path from "path";
+
+async function saveFile(file: File | null): Promise<string | null> {
+  if (!file || file.size === 0) return null;
+  const bytes = await file.arrayBuffer();
+  const buffer = Buffer.from(bytes);
+  const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+  const uploadDir = path.join(process.cwd(), "public", "uploads", "produits");
+  await fs.mkdir(uploadDir, { recursive: true });
+  await fs.writeFile(path.join(uploadDir, fileName), buffer);
+  return `/uploads/produits/${fileName}`;
+}
 
 export async function addProduit(formData: FormData) {
   const session = await getSession();
@@ -15,6 +28,13 @@ export async function addProduit(formData: FormData) {
   const prix_achat_detail = parseInt(formData.get("prix_achat_detail") as string, 10);
   const prix_vente_gros = parseInt(formData.get("prix_vente_gros") as string, 10);
   const prix_vente_detail = parseInt(formData.get("prix_vente_detail") as string, 10);
+  const seuil_alerte_stock = parseInt(formData.get("seuil_alerte_stock") as string, 10) || 10;
+  
+  let imageUrl = formData.get("imageUrl") as string | null;
+  const imageFile = formData.get("imageFile") as File | null;
+  if (imageFile && imageFile.size > 0) {
+    imageUrl = await saveFile(imageFile);
+  }
 
   if (!nom || !categorie_id || isNaN(prix_achat_gros) || isNaN(prix_achat_detail) || isNaN(prix_vente_gros) || isNaN(prix_vente_detail)) {
     throw new Error("Tous les champs obligatoires doivent être valides.");
@@ -52,6 +72,8 @@ export async function addProduit(formData: FormData) {
       prix_achat_detail,
       prix_vente_gros,
       prix_vente_detail,
+      seuil_alerte_stock,
+      imageUrl: imageUrl || null,
     },
   });
 
@@ -70,6 +92,13 @@ export async function updateProduit(formData: FormData) {
   const prix_achat_detail = parseInt(formData.get("prix_achat_detail") as string, 10);
   const prix_vente_gros = parseInt(formData.get("prix_vente_gros") as string, 10);
   const prix_vente_detail = parseInt(formData.get("prix_vente_detail") as string, 10);
+  const seuil_alerte_stock = parseInt(formData.get("seuil_alerte_stock") as string, 10) || 10;
+  
+  let imageUrl = formData.get("imageUrl") as string | null;
+  const imageFile = formData.get("imageFile") as File | null;
+  if (imageFile && imageFile.size > 0) {
+    imageUrl = await saveFile(imageFile);
+  }
 
   if (!id || !nom || !categorie_id || isNaN(prix_achat_gros) || isNaN(prix_achat_detail) || isNaN(prix_vente_gros) || isNaN(prix_vente_detail)) {
     throw new Error("Tous les champs obligatoires doivent être valides.");
@@ -95,6 +124,8 @@ export async function updateProduit(formData: FormData) {
       prix_achat_detail,
       prix_vente_gros,
       prix_vente_detail,
+      seuil_alerte_stock,
+      imageUrl: imageUrl || null,
     },
   });
 

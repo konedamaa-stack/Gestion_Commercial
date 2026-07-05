@@ -42,7 +42,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const dateFilter = startDate ? { gte: startDate } : undefined;
 
   // Récupérer les données globales
-  const [produits, mouvements, stocksInternes, commandes, depenses] = await Promise.all([
+  const [produits, mouvements, tousLesMouvements, stocksInternes, commandes, depenses] = await Promise.all([
     prisma.produit.findMany({ 
       where: { etablissement_id: session.etablissement_id! },
       include: { categorie: true } 
@@ -56,6 +56,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       take: 20,
       orderBy: { date_mouvement: 'desc' },
       include: { produit: { include: { categorie: true } }, stock_source: true, stock_destination: true, utilisateur: true }
+    }),
+    prisma.mouvementStock.findMany({
+      where: { etablissement_id: session.etablissement_id! }
     }),
     prisma.stock.findMany({ 
       where: { 
@@ -80,7 +83,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     })
   ]);
 
-  // A. Valeur du Stock
+  // A. Valeur du Stock et Inventaire Global
   let totalValeur = 0;
   mouvements.forEach(mvt => {
     if (mvt.stock_destination && !mvt.stock_destination.est_externe) {
@@ -91,6 +94,24 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     }
   });
   totalValeur = Math.max(0, totalValeur);
+
+  const inventaireGlobal: Record<string, number> = {};
+  tousLesMouvements.forEach(m => {
+    if (m.stock_destination_id) {
+       inventaireGlobal[m.produit_id] = (inventaireGlobal[m.produit_id] || 0) + m.quantite;
+    }
+    if (m.stock_source_id) {
+       inventaireGlobal[m.produit_id] = (inventaireGlobal[m.produit_id] || 0) - m.quantite;
+    }
+  });
+
+  const produitsEnAlerte = produits.filter(p => {
+    const qte = inventaireGlobal[p.id] || 0;
+    return qte <= p.seuil_alerte_stock;
+  }).map(p => ({
+    ...p,
+    stockDispo: inventaireGlobal[p.id] || 0
+  }));
 
   // B. Statistiques de Vente et Bénéfice
   let totalVentes = 0;
@@ -169,6 +190,23 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <h1 className="text-2xl font-bold text-slate-800">Tableau de bord</h1>
             <DashboardFilter />
           </div>
+
+          {userRole === "PATRON" && produitsEnAlerte.length > 0 && (
+            <div className="mb-8 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-xl">
+              <h3 className="text-red-800 font-bold flex items-center gap-2 mb-2">
+                <FileWarning className="w-5 h-5" />
+                Alertes de Stock ({produitsEnAlerte.length})
+              </h3>
+              <div className="max-h-32 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+                {produitsEnAlerte.map(p => (
+                  <div key={p.id} className="flex justify-between items-center text-sm bg-white p-2 rounded shadow-sm border border-red-100">
+                    <span className="font-semibold text-slate-800">{p.nom}</span>
+                    <span className="text-red-600 font-bold">Reste: {p.stockDispo} (Seuil: {p.seuil_alerte_stock})</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           
           {userRole === "PATRON" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

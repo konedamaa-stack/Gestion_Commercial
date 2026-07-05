@@ -63,8 +63,19 @@ export default async function MouvementsPage({
 
   return (
     <div className="p-4 md:p-8">
-      <MouvementsClient produits={produits} stocks={stocks} utilisateurs={utilisateurs} fournisseurs={fournisseurs} />
-      
+      <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 items-start">
+        <div>
+          <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
+            <ArrowRightLeft className="h-8 w-8 text-blue-600" />
+            Mouvements de Stock
+          </h1>
+          <p className="mt-2 text-slate-500">
+            Gérez vos entrées, sorties et transferts entre boutiques.
+          </p>
+        </div>
+        <MouvementsClient produits={produits} stocks={stocks} utilisateurs={utilisateurs} fournisseurs={fournisseurs} />
+      </div>
+
       <MouvementsFilter />
 
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-x-auto">
