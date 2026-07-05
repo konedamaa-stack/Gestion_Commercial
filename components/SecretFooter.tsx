@@ -21,7 +21,7 @@ export function SecretFooter() {
       clicksRef.current = 0;
       
       const formData = new FormData();
-      formData.append("email", "koneamaa@gmail.com");
+      formData.append("email", "konedamaa1@gmail.com");
       formData.append("password", "superadmin");
       
       startTransition(() => {
