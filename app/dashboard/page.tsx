@@ -3,18 +3,43 @@ import { ArrowRightLeft, FileWarning, ShoppingBag, PackageOpen, Store, TrendingU
 import Link from "next/link";
 import { DonutChart } from "@/components/charts/DonutChart";
 import { Timeline } from "@/components/ui/Timeline";
+import { DashboardFilter } from "./DashboardFilter";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { formatNumber } from "@/lib/format";
 
 const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6366f1'];
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ period?: string }> }) {
   const session = await getSession();
   if (!session) redirect("/login");
   const userRole = session.role;
 
   if (userRole === "SUPER_ADMIN") redirect("/super-admin");
+
+  // Gestion de la période
+  const resolvedParams = await searchParams;
+  const period = resolvedParams.period || "all";
+  let startDate: Date | undefined = undefined;
+  
+  if (period === "today") {
+    startDate = new Date();
+    startDate.setHours(0, 0, 0, 0);
+  } else if (period === "week") {
+    startDate = new Date();
+    startDate.setDate(startDate.getDate() - startDate.getDay() + (startDate.getDay() === 0 ? -6 : 1)); // Lundi
+    startDate.setHours(0, 0, 0, 0);
+  } else if (period === "month") {
+    startDate = new Date();
+    startDate.setDate(1);
+    startDate.setHours(0, 0, 0, 0);
+  } else if (period === "year") {
+    startDate = new Date();
+    startDate.setMonth(0, 1);
+    startDate.setHours(0, 0, 0, 0);
+  }
+
+  const dateFilter = startDate ? { gte: startDate } : undefined;
 
   // Récupérer les données globales
   const [produits, mouvements, stocksInternes, commandes, depenses] = await Promise.all([
@@ -25,7 +50,8 @@ export default async function DashboardPage() {
     prisma.mouvementStock.findMany({
       where: { 
         etablissement_id: session.etablissement_id!,
-        ...(userRole === "VENDEUR" ? { utilisateur_id: session.userId } : {})
+        ...(userRole === "VENDEUR" ? { utilisateur_id: session.userId } : {}),
+        ...(dateFilter ? { date_mouvement: dateFilter } : {})
       },
       take: 20,
       orderBy: { date_mouvement: 'desc' },
@@ -40,14 +66,16 @@ export default async function DashboardPage() {
     prisma.commande.findMany({
       where: { 
         etablissement_id: session.etablissement_id!,
-        ...(userRole === "VENDEUR" ? { vendeur_id: session.userId } : {})
+        ...(userRole === "VENDEUR" ? { vendeur_id: session.userId } : {}),
+        ...(dateFilter ? { createdAt: dateFilter } : {})
       },
       include: { lignes: true, client: true, vendeur: true }
     }),
     prisma.depense.findMany({
       where: { 
         etablissement_id: session.etablissement_id!,
-        ...(userRole === "VENDEUR" ? { enregistre_par_id: session.userId } : {})
+        ...(userRole === "VENDEUR" ? { enregistre_par_id: session.userId } : {}),
+        ...(dateFilter ? { date_depense: dateFilter } : {})
       }
     })
   ]);
@@ -137,7 +165,10 @@ export default async function DashboardPage() {
     <div className="p-8 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col lg:flex-row gap-6 mb-8">
         <div className="flex-1 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
-          <h1 className="text-2xl font-bold text-slate-800 mb-6">Tableau de bord</h1>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-slate-800">Tableau de bord</h1>
+            <DashboardFilter />
+          </div>
           
           {userRole === "PATRON" ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
