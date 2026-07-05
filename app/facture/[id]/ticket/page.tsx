@@ -35,8 +35,6 @@ export default async function TicketPage({ params }: { params: Promise<{ id: str
         {/* En-tête */}
         <div className="text-center mb-4">
           <h1 className="font-bold text-lg uppercase">{commande.etablissement.nom}</h1>
-          {commande.etablissement.adresse && <p>{commande.etablissement.adresse}</p>}
-          {commande.etablissement.telephone && <p>Tel: {commande.etablissement.telephone}</p>}
         </div>
 
         <div className="border-b border-black border-dashed pb-2 mb-2">
