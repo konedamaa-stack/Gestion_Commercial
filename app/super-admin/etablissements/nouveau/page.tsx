@@ -24,15 +24,15 @@ export default function NouvelEtablissementPage() {
   }
 
   return (
-    <div className="p-8 max-w-3xl mx-auto space-y-8">
+    <div className="p-4 md:p-8 max-w-3xl mx-auto space-y-6 md:space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-slate-900 mb-2">Nouvel Établissement</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Nouvel Établissement</h1>
         <p className="text-slate-500">Créez une nouvelle boutique et générez son compte administrateur (Patron).</p>
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <form action={handleSubmit}>
-          <div className="p-6 space-y-8">
+          <div className="p-4 md:p-6 space-y-6 md:space-y-8">
             
             {error && (
               <div className="p-4 bg-red-50 text-red-700 rounded-xl text-sm font-medium border border-red-100">
@@ -118,18 +118,18 @@ export default function NouvelEtablissementPage() {
 
           </div>
           
-          <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+          <div className="p-4 md:p-6 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row justify-end gap-3">
             <button 
               type="button" 
               onClick={() => router.back()}
-              className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-200 rounded-lg transition-colors"
+              className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-200 rounded-lg transition-colors w-full sm:w-auto text-center"
             >
               Annuler
             </button>
             <button 
               type="submit" 
               disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 w-full sm:w-auto text-center"
             >
               {loading ? "Création en cours..." : "Créer l'établissement"}
             </button>
