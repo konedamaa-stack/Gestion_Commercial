@@ -1,11 +1,13 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+  schemas   = ["gestion_commerciale"]
 }
 
 model Etablissement {
@@ -28,6 +30,7 @@ model Etablissement {
   
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
+  @@schema("gestion_commerciale")
 }
 
 model Utilisateur {
@@ -53,6 +56,7 @@ model Utilisateur {
   
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
+  @@schema("gestion_commerciale")
 }
 
 model Categorie {
@@ -67,6 +71,7 @@ model Categorie {
   
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
+  @@schema("gestion_commerciale")
 }
 
 model Produit {
@@ -92,6 +97,7 @@ model Produit {
   updatedAt         DateTime        @updatedAt
   
   @@unique([etablissement_id, code_barre]) // Un code barre est unique au sein d'un établissement
+  @@schema("gestion_commerciale")
 }
 
 model Stock {
@@ -117,6 +123,7 @@ model Stock {
   
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+  @@schema("gestion_commerciale")
 }
 
 model MouvementStock {
@@ -145,6 +152,7 @@ model MouvementStock {
   fournisseur           Fournisseur?    @relation(fields: [fournisseur_id], references: [id])
   
   date_mouvement        DateTime        @default(now())
+  @@schema("gestion_commerciale")
 }
 
 model Client {
@@ -160,6 +168,7 @@ model Client {
   
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+  @@schema("gestion_commerciale")
 }
 
 model Fournisseur {
@@ -175,6 +184,7 @@ model Fournisseur {
   
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+  @@schema("gestion_commerciale")
 }
 
 model Commande {
@@ -205,6 +215,7 @@ model Commande {
   
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
+  @@schema("gestion_commerciale")
 }
 
 model LigneCommande {
@@ -219,6 +230,7 @@ model LigneCommande {
   quantite        Int
   prix_unitaire   Int         // Prix vendu
   prix_achat_unitaire Int     // Prix d'achat à l'instant T pour calculer le bénéfice
+  @@schema("gestion_commerciale")
 }
 
 model Depense {
@@ -233,4 +245,5 @@ model Depense {
   
   enregistre_par_id String
   enregistre_par  Utilisateur @relation("UtilisateurDepense", fields: [enregistre_par_id], references: [id])
+  @@schema("gestion_commerciale")
 }
