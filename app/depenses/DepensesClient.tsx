@@ -5,9 +5,16 @@ import { Plus, X, Wallet } from "lucide-react";
 import { addDepense, deleteDepense } from "./actions";
 import { toast } from "react-hot-toast";
 
-export function DepensesClient({ userRole }: { userRole: string }) {
+export function DepensesClient({ 
+  userRole, 
+  employes = [] 
+}: { 
+  userRole: string, 
+  employes?: {id: string, nom: string, role: string}[] 
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [selectedMotif, setSelectedMotif] = useState("");
   
   const MOTIFS = [
     "Salaire", "Facture Électricité", "Facture Eau", "Loyer",
@@ -78,6 +85,7 @@ export function DepensesClient({ userRole }: { userRole: string }) {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Motif</label>
                 <select name="motif" id="motifSelect" required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none"
                   onChange={(e) => {
+                    setSelectedMotif(e.target.value);
                     const autreInput = document.getElementById("motifAutreContainer");
                     if (e.target.value === "Autre" && autreInput) autreInput.style.display = "block";
                     else if (autreInput) autreInput.style.display = "none";
@@ -95,7 +103,16 @@ export function DepensesClient({ userRole }: { userRole: string }) {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Bénéficiaire (Optionnel)</label>
-                <input type="text" name="beneficiaire" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none" placeholder="Ex: Jean (Employé), CIE, etc." />
+                {selectedMotif === "Salaire" ? (
+                  <select name="beneficiaire" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none bg-white">
+                    <option value="">Sélectionnez un employé...</option>
+                    {employes.map(emp => (
+                      <option key={emp.id} value={emp.nom}>{emp.nom} ({emp.role})</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input type="text" name="beneficiaire" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none" placeholder="Ex: Jean (Employé), CIE, etc." />
+                )}
               </div>
 
               <div>

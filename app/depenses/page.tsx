@@ -20,6 +20,11 @@ export default async function DepensesPage() {
 
   const totalDepenses = depenses.reduce((acc, d) => acc + d.montant, 0);
 
+  const employes = await prisma.utilisateur.findMany({
+    where: { etablissement_id: session.etablissement_id! },
+    select: { id: true, nom: true, role: true }
+  });
+
   return (
     <div className="p-4 md:p-8">
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 items-start">
@@ -32,7 +37,7 @@ export default async function DepensesPage() {
             Suivez et gérez toutes les sorties d'argent de votre établissement.
           </p>
         </div>
-        <DepensesClient userRole={session.role} />
+        <DepensesClient userRole={session.role} employes={employes} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
