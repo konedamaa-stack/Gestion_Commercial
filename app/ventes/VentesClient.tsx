@@ -118,7 +118,7 @@ export function VentesClient({ produits, stocks, clients, userRole, inventaire }
               </button>
             </div>
 
-            <div className="flex-1 overflow-auto p-6 flex flex-col md:flex-row gap-6">
+            <div className="flex-1 overflow-auto p-4 md:p-6 flex flex-col md:flex-row gap-6">
               
               <div className="w-full md:w-1/2 flex flex-col gap-4">
                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
@@ -213,7 +213,7 @@ export function VentesClient({ produits, stocks, clients, userRole, inventaire }
                       <div key={i} className="bg-white border border-slate-200 rounded-lg p-3 shadow-sm flex items-center justify-between gap-2">
                         <div className="flex-1">
                           <div className="font-bold text-slate-800">{p.nom}</div>
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="flex flex-wrap items-center gap-2 mt-1">
                             <input 
                               type="number" 
                               min="1" 

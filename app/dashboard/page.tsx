@@ -162,16 +162,16 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const topVendeurs = Array.from(ventesParVendeur.values()).sort((a, b) => b.total - a.total).slice(0, 5);
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-6">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
       <div className="flex flex-col lg:flex-row gap-6 mb-8">
-        <div className="flex-1 bg-white rounded-2xl border border-slate-100 p-8 shadow-sm">
+        <div className="flex-1 bg-white rounded-2xl border border-slate-100 p-4 md:p-8 shadow-sm">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold text-slate-800">Tableau de bord</h1>
             <DashboardFilter />
           </div>
           
           {userRole === "PATRON" ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <div>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Chiffre d'Affaires</p>
                 <div className="flex items-baseline gap-1">
@@ -208,7 +208,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm flex flex-col">
+        <div className="bg-white rounded-2xl border border-slate-100 p-4 md:p-6 shadow-sm flex flex-col">
           <h2 className="text-lg font-bold text-slate-800 mb-6">Répartition Catalogue</h2>
           <div className="flex-1 flex flex-col justify-center">
             {repartitionData.length > 0 ? (
@@ -269,7 +269,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {userRole === "PATRON" && (
-          <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+          <div className="bg-white rounded-2xl border border-slate-100 p-4 md:p-6 shadow-sm">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-lg font-bold text-slate-800">Top Vendeurs</h2>
             </div>
