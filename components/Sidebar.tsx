@@ -40,7 +40,7 @@ export function Sidebar({ user }: { user: SessionData | null }) {
   if (user.role === "SUPER_ADMIN") return null; // Le Super Admin a sa propre sidebar dans app/super-admin/layout.tsx
 
   return (
-    <div className="flex h-full w-64 flex-col bg-slate-950 text-white shadow-2xl border-r border-slate-800/50 relative z-20">
+    <div className="flex h-full w-80 flex-col bg-slate-950 text-white shadow-2xl border-r border-slate-800/50 relative z-20">
       <div className="flex h-16 items-center justify-center border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-md sticky top-0 z-10">
         <h1 className="text-xl font-black tracking-widest bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 drop-shadow-sm">
           GESTION PRO

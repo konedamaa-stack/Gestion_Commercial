@@ -24,7 +24,7 @@ export default async function SuperAdminLayout({
   ];
 
   const sidebarComponent = (
-    <div className="w-64 h-full bg-slate-900 text-slate-300 flex flex-col">
+    <div className="w-80 h-full bg-slate-900 text-slate-300 flex flex-col">
       <div className="h-16 flex items-center px-6 bg-slate-950 border-b border-slate-800">
         <span className="text-xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
           Portail Super Admin
