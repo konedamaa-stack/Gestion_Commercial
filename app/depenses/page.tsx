@@ -53,7 +53,8 @@ export default async function DepensesPage() {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Date</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Motif</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Montant</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Bénéficiaire</th>
+                <th className="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Montant</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Enregistré par</th>
               </tr>
             </thead>
@@ -67,10 +68,13 @@ export default async function DepensesPage() {
                     <div className="text-sm font-medium text-slate-900">{dep.motif}</div>
                     {dep.description && <div className="text-xs text-slate-500 mt-1">{dep.description}</div>}
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-slate-700 font-medium">{dep.beneficiaire || "-"}</div>
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right">
                     <div className="text-sm font-bold text-red-600">-{formatNumber(dep.montant)} F</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500 flex justify-between items-center">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
                     <span>{dep.enregistre_par.nom}</span>
                     {/* Add delete button in client component if needed, for now it's server-rendered */}
                   </td>
@@ -78,7 +82,7 @@ export default async function DepensesPage() {
               ))}
               {depenses.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
                     Aucune dépense enregistrée.
                   </td>
                 </tr>

@@ -236,6 +236,7 @@ model LigneCommande {
 model Depense {
   id              String      @id @default(uuid())
   motif           String      // Salaire, Transport, Facture...
+  beneficiaire    String?     // A qui l'argent a été donné
   description     String?
   montant         Int
   date_depense    DateTime    @default(now())

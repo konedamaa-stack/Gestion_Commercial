@@ -6,6 +6,7 @@ import { getSession } from "@/lib/session";
 
 export async function addDepense(data: {
   motif: string;
+  beneficiaire?: string;
   description?: string;
   montant: number;
 }) {
@@ -19,6 +20,7 @@ export async function addDepense(data: {
   await prisma.depense.create({
     data: {
       motif: data.motif,
+      beneficiaire: data.beneficiaire || null,
       description: data.description,
       montant: data.montant,
       etablissement_id: session.etablissement_id!,

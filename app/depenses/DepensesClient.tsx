@@ -25,6 +25,7 @@ export function DepensesClient({ userRole }: { userRole: string }) {
     try {
       await addDepense({
         motif: finalMotif,
+        beneficiaire: formData.get("beneficiaire") as string,
         description: formData.get("description") as string,
         montant: parseInt(formData.get("montant") as string) || 0
       });
@@ -90,6 +91,11 @@ export function DepensesClient({ userRole }: { userRole: string }) {
               <div id="motifAutreContainer" style={{display: 'none'}}>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Précisez le motif</label>
                 <input type="text" name="motif_autre" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none" placeholder="Ex: Réparation porte" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Bénéficiaire (Optionnel)</label>
+                <input type="text" name="beneficiaire" className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-500 outline-none" placeholder="Ex: Jean (Employé), CIE, etc." />
               </div>
 
               <div>
