@@ -20,6 +20,13 @@ export async function addProduit(formData: FormData) {
     throw new Error("Tous les champs obligatoires doivent être valides.");
   }
 
+  if (prix_vente_gros <= prix_achat_gros) {
+    throw new Error("Le prix de vente en gros doit être supérieur au prix d'achat en gros.");
+  }
+  if (prix_vente_detail <= prix_achat_detail) {
+    throw new Error("Le prix de vente au détail doit être supérieur au prix d'achat au détail.");
+  }
+
   // Vérification de la limite de forfait
   const etablissement = await prisma.etablissement.findUnique({
     where: { id: session.etablissement_id! }
@@ -66,6 +73,13 @@ export async function updateProduit(formData: FormData) {
 
   if (!id || !nom || !categorie_id || isNaN(prix_achat_gros) || isNaN(prix_achat_detail) || isNaN(prix_vente_gros) || isNaN(prix_vente_detail)) {
     throw new Error("Tous les champs obligatoires doivent être valides.");
+  }
+
+  if (prix_vente_gros <= prix_achat_gros) {
+    throw new Error("Le prix de vente en gros doit être supérieur au prix d'achat en gros.");
+  }
+  if (prix_vente_detail <= prix_achat_detail) {
+    throw new Error("Le prix de vente au détail doit être supérieur au prix d'achat au détail.");
   }
 
   await prisma.produit.update({
