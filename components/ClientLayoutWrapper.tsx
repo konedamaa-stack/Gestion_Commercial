@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { stopImpersonation } from "@/app/super-admin/etablissements/actions";
 import { SessionData } from "@/lib/session";
@@ -19,13 +19,19 @@ export function ClientLayoutWrapper({
   const pathname = usePathname();
   const isFacture = pathname.startsWith('/facture');
   const isLandingPage = pathname === '/';
+  const isSuperAdmin = pathname.startsWith('/super-admin');
   
-  const isPublicOrPrint = isFacture || isLandingPage;
+  const isPublicOrPrint = isFacture || isLandingPage || isSuperAdmin;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Fermer la sidebar automatiquement lors du changement de route sur mobile
+  useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [pathname]);
 
   return (
     <div className={`flex flex-col ${isPublicOrPrint ? 'min-h-screen bg-white text-black' : 'h-screen overflow-hidden bg-slate-50 text-slate-900'}`}>
-      {user?.impersonatedBySuperAdmin && (
+      {user?.impersonatedBySuperAdmin && !isSuperAdmin && (
         <div className="bg-red-600 text-white px-4 py-2 flex justify-between items-center z-50 shadow-md">
           <div className="flex items-center gap-2">
             <span className="animate-pulse">⚠️</span>
@@ -35,21 +41,23 @@ export function ClientLayoutWrapper({
             onClick={() => stopImpersonation()}
             className="px-4 py-1.5 bg-white text-red-600 rounded-md text-xs font-bold hover:bg-red-50 transition-colors shadow-sm"
           >
-            Quitter ce mode et retourner au Super Admin
+            Quitter
           </button>
         </div>
       )}
+
+      {!isPublicOrPrint && (
+        <div className="md:hidden flex-none flex items-center justify-between p-4 bg-slate-900 text-white shadow-md z-30">
+          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">GESTION PRO</h1>
+          <button onClick={() => setIsSidebarOpen(true)} className="p-2 bg-slate-800 rounded-md">
+            <Menu className="h-6 w-6" />
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-1 overflow-hidden relative">
         {!isPublicOrPrint && (
           <>
-            {/* Mobile Header */}
-            <div className="md:hidden flex items-center justify-between p-4 bg-slate-900 text-white shadow-md z-30 absolute top-0 left-0 right-0">
-              <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">GESTION PRO</h1>
-              <button onClick={() => setIsSidebarOpen(true)} className="p-2 bg-slate-800 rounded-md">
-                <Menu className="h-6 w-6" />
-              </button>
-            </div>
-
             {/* Mobile Overlay */}
             {isSidebarOpen && (
               <div 
@@ -76,7 +84,7 @@ export function ClientLayoutWrapper({
             </div>
           </>
         )}
-        <main className={`flex-1 ${isPublicOrPrint ? '' : 'overflow-y-auto mt-[72px] md:mt-0'}`}>
+        <main className={`flex-1 ${isPublicOrPrint ? '' : 'overflow-y-auto'}`}>
           {children}
         </main>
       </div>
