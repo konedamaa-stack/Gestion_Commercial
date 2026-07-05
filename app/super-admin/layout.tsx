@@ -3,6 +3,7 @@ import { Building2, Users, LayoutDashboard, Settings, LogOut } from "lucide-reac
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { logoutAction } from "@/app/login/logout";
+import { SuperAdminLayoutWrapper } from "./SuperAdminLayoutWrapper";
 
 export default async function SuperAdminLayout({
   children,
@@ -22,57 +23,47 @@ export default async function SuperAdminLayout({
     { name: "Paramètres", href: "/super-admin/parametres", icon: Settings },
   ];
 
-  return (
-    <div className="min-h-screen bg-slate-50 flex">
-      {/* Sidebar Super Admin */}
-      <div className="w-64 bg-slate-900 text-slate-300 flex flex-col hidden md:flex">
-        <div className="h-16 flex items-center px-6 bg-slate-950 border-b border-slate-800">
-          <span className="text-xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
-            Portail Super Admin
-          </span>
-        </div>
-
-        <nav className="flex-1 px-4 py-6 space-y-2">
-          {navigation.map((item) => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition-colors"
-              >
-                <Icon className="h-5 w-5 text-slate-400" />
-                <span className="font-medium text-sm">{item.name}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="p-4 border-t border-slate-800">
-          <form action={logoutAction}>
-            <button
-              type="submit"
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
-            >
-              <LogOut className="h-5 w-5" />
-              Déconnexion
-            </button>
-          </form>
-        </div>
+  const sidebarComponent = (
+    <div className="w-64 h-full bg-slate-900 text-slate-300 flex flex-col">
+      <div className="h-16 flex items-center px-6 bg-slate-950 border-b border-slate-800">
+        <span className="text-xl font-bold text-white bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-indigo-400">
+          Portail Super Admin
+        </span>
       </div>
 
-      {/* Main content */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Header mobile (si nécessaire) */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center px-6 md:hidden">
-          <span className="font-bold text-slate-800">Portail Super Admin</span>
-        </header>
+      <nav className="flex-1 px-4 py-6 space-y-2">
+        {navigation.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-slate-800 hover:text-white transition-colors"
+            >
+              <Icon className="h-5 w-5 text-slate-400" />
+              <span className="font-medium text-sm">{item.name}</span>
+            </Link>
+          );
+        })}
+      </nav>
 
-        {/* Page Content */}
-        <div className="flex-1 overflow-y-auto">
-          {children}
-        </div>
-      </main>
+      <div className="p-4 border-t border-slate-800">
+        <form action={logoutAction}>
+          <button
+            type="submit"
+            className="w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
+          >
+            <LogOut className="h-5 w-5" />
+            Déconnexion
+          </button>
+        </form>
+      </div>
     </div>
+  );
+
+  return (
+    <SuperAdminLayoutWrapper SidebarComponent={sidebarComponent}>
+      {children}
+    </SuperAdminLayoutWrapper>
   );
 }
