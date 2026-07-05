@@ -5,6 +5,7 @@ import { Plus, Tags } from "lucide-react";
 import { Modal } from "@/components/Modal";
 import { SubmitButton } from "@/components/SubmitButton";
 import { addProduit, addCategorie } from "./actions";
+import { toast } from "react-hot-toast";
 
 export function ProduitsClient({ categories, userRole }: { categories: any[], userRole?: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,8 +40,13 @@ export function ProduitsClient({ categories, userRole }: { categories: any[], us
       >
         <form 
           action={async (formData) => {
-            await addCategorie(formData);
-            setIsCatModalOpen(false);
+            try {
+              await addCategorie(formData);
+              setIsCatModalOpen(false);
+              toast.success("Catégorie ajoutée");
+            } catch (err: any) {
+              toast.error(err.message || "Erreur");
+            }
           }} 
           className="space-y-4"
         >
@@ -66,8 +72,13 @@ export function ProduitsClient({ categories, userRole }: { categories: any[], us
       >
         <form 
           action={async (formData) => {
-            await addProduit(formData);
-            setIsModalOpen(false);
+            try {
+              await addProduit(formData);
+              setIsModalOpen(false);
+              toast.success("Produit ajouté");
+            } catch (err: any) {
+              toast.error(err.message || "Erreur");
+            }
           }} 
           className="space-y-4"
         >

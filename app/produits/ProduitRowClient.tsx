@@ -7,6 +7,7 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { ConfirmDeleteModal } from "@/components/ConfirmDeleteModal";
 import { deleteProduit, updateProduit } from "./actions";
 import { formatNumber } from "@/lib/format";
+import { toast } from "react-hot-toast";
 
 export function ProduitRowClient({ 
   produit, 
@@ -66,8 +67,13 @@ export function ProduitRowClient({
       <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title="Modifier le Produit">
         <form 
           action={async (formData) => {
-            await updateProduit(formData);
-            setIsEditModalOpen(false);
+            try {
+              await updateProduit(formData);
+              setIsEditModalOpen(false);
+              toast.success("Produit modifié");
+            } catch (err: any) {
+              toast.error(err.message || "Erreur");
+            }
           }} 
           className="space-y-4"
         >
@@ -134,8 +140,13 @@ export function ProduitRowClient({
         title="Supprimer le produit"
         description={`Êtes-vous sûr de vouloir supprimer le produit "${produit.nom}" ? Cette action est irréversible et supprimera le produit de votre catalogue. Si des mouvements de stocks existent pour ce produit, la suppression sera bloquée.`}
         onConfirm={async () => {
-          await deleteProduit(produit.id);
-          setIsDeleteModalOpen(false);
+          try {
+            await deleteProduit(produit.id);
+            setIsDeleteModalOpen(false);
+            toast.success("Produit supprimé");
+          } catch (err: any) {
+            toast.error(err.message || "Erreur lors de la suppression");
+          }
         }}
       />
     </>
