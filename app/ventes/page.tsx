@@ -9,6 +9,7 @@ import { ExportButton } from "@/components/ExportButton";
 export default async function VentesPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  if (session.role === "SUPER_ADMIN") redirect("/super-admin");
 
   // Charger les données nécessaires pour le Point de Vente
   const produits = await prisma.produit.findMany({

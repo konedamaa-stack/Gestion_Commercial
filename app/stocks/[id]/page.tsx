@@ -8,6 +8,7 @@ import { formatNumber } from "@/lib/format";
 export default async function StockInventoryPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session) redirect("/login");
+  if (session.role === "SUPER_ADMIN") redirect("/super-admin");
 
   const resolvedParams = await params;
 
@@ -75,7 +76,7 @@ export default async function StockInventoryPage({ params }: { params: Promise<{
     <div className="p-4 md:p-8">
       <div className="mb-6">
         <Link href="/stocks" className="text-blue-600 hover:underline flex items-center gap-2 text-sm font-medium">
-          <ArrowLeft className="h-4 w-4" /> Retour aux stocks
+          <ArrowLeft className="h-4 w-4" /> Retour aux magasins
         </Link>
       </div>
 
@@ -92,7 +93,7 @@ export default async function StockInventoryPage({ params }: { params: Promise<{
         
         <div className="flex gap-4">
           <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm min-w-[150px]">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Articles en stock</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Articles en magasin</p>
             <p className="text-2xl font-black text-indigo-600">{totalArticles}</p>
           </div>
           {session.role === "PATRON" && (
@@ -111,7 +112,7 @@ export default async function StockInventoryPage({ params }: { params: Promise<{
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Produit</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Catégorie</th>
-                <th className="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Quantité en Stock</th>
+                <th className="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Quantité en Magasin</th>
                 {session.role === "PATRON" && (
                   <th className="px-6 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wider">Valeur</th>
                 )}
@@ -121,7 +122,7 @@ export default async function StockInventoryPage({ params }: { params: Promise<{
               {inventory.length === 0 ? (
                 <tr>
                   <td colSpan={session.role === "PATRON" ? 4 : 3} className="px-6 py-12 text-center text-slate-500">
-                    Ce stock est totalement vide.
+                    Ce magasin est totalement vide.
                   </td>
                 </tr>
               ) : (

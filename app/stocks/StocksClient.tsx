@@ -17,14 +17,14 @@ export function StocksClient({ stocks }: { stocks: any[] }) {
           className="w-full sm:w-auto justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-indigo-500/20 hover:bg-indigo-500 transition-colors flex items-center gap-2"
         >
           <Plus className="h-4 w-4" />
-          Ajouter un Stock
+          Ajouter un Magasin
         </button>
       </div>
 
       <Modal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        title="Ajouter un Point de Stockage"
+        title="Ajouter un Magasin"
       >
         <form 
           action={async (formData) => {
@@ -34,7 +34,7 @@ export function StocksClient({ stocks }: { stocks: any[] }) {
           className="space-y-4"
         >
           <div>
-            <label htmlFor="nom" className="block text-sm font-medium text-slate-700 mb-1">Nom du stock</label>
+            <label htmlFor="nom" className="block text-sm font-medium text-slate-700 mb-1">Nom du magasin</label>
             <input 
               type="text" 
               name="nom" 
@@ -55,13 +55,13 @@ export function StocksClient({ stocks }: { stocks: any[] }) {
             />
           </div>
           <div>
-            <label htmlFor="stock_parent_id" className="block text-sm font-medium text-slate-700 mb-1">Stock Parent (Optionnel)</label>
+            <label htmlFor="stock_parent_id" className="block text-sm font-medium text-slate-700 mb-1">Magasin Parent (Optionnel)</label>
             <select 
               name="stock_parent_id" 
               id="stock_parent_id"
               className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none bg-white"
             >
-              <option value="">-- Aucun parent (Stock principal) --</option>
+              <option value="">-- Aucun parent (Magasin principal) --</option>
               {stocks.map(s => (
                 <option key={s.id} value={s.id}>{s.nom}</option>
               ))}
@@ -69,7 +69,7 @@ export function StocksClient({ stocks }: { stocks: any[] }) {
           </div>
           
           <div className="pt-4">
-            <SubmitButton label="Créer le stock" />
+            <SubmitButton label="Créer le magasin" />
           </div>
         </form>
       </Modal>

@@ -137,7 +137,7 @@ export function VentesClient({ produits, stocks, clients, userRole, inventaire }
                   
                   {typeVente === "TRANSFERT_INTERNE" ? (
                     <div>
-                      <label className="block text-sm font-medium text-slate-700 mb-1">Stock de Destination</label>
+                      <label className="block text-sm font-medium text-slate-700 mb-1">Magasin de Destination</label>
                       <select 
                         value={stockDestination}
                         onChange={(e) => setStockDestination(e.target.value)}
@@ -166,7 +166,7 @@ export function VentesClient({ produits, stocks, clients, userRole, inventaire }
                   )}
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-1">Depuis le stock</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Depuis le magasin</label>
                     <select 
                       value={stockSource}
                       onChange={(e) => setStockSource(e.target.value)}

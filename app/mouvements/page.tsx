@@ -13,6 +13,7 @@ export default async function MouvementsPage({
 }) {
   const session = await getSession();
   if (!session) redirect("/login");
+  if (session.role === "SUPER_ADMIN") redirect("/super-admin");
   const userRole = session.role;
 
   const resolvedParams = await searchParams;

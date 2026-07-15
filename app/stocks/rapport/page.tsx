@@ -13,6 +13,7 @@ export default async function RapportInventairePage({
 }) {
   const session = await getSession();
   if (!session) redirect("/login");
+  if (session.role === "SUPER_ADMIN") redirect("/super-admin");
   if (session.role === "VENDEUR") redirect("/");
 
   const resolvedSearchParams = await searchParams;

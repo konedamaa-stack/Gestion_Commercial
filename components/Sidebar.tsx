@@ -20,7 +20,7 @@ const navigation = [
   { name: "Ventes & Factures", href: "/ventes", icon: Receipt },
   { name: "Mouvements", href: "/mouvements", icon: ArrowRightLeft },
   { name: "Inventaire & Rapports", href: "/dashboard/inventaire", icon: LayoutDashboard },
-  { name: "Stocks", href: "/stocks", icon: Warehouse },
+  { name: "Magasins", href: "/stocks", icon: Warehouse },
   { name: "Produits", href: "/produits", icon: Package },
   { name: "Crédits", href: "/credits", icon: HandCoins },
   { name: "Dépenses", href: "/depenses", icon: Wallet },

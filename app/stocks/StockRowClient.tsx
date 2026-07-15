@@ -37,7 +37,7 @@ export function StockRowClient({ stock, stocks }: { stock: any, stocks: any[] })
             </span>
           ) : (
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
-              Stock Principal
+              Magasin Principal
             </span>
           )}
         </td>
@@ -70,7 +70,7 @@ export function StockRowClient({ stock, stocks }: { stock: any, stocks: any[] })
       </tr>
 
       {/* Edit Modal */}
-      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title="Modifier le Stock">
+      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} title="Modifier le Magasin">
         <form 
           action={async (formData) => {
             await updateStock(formData);
@@ -83,7 +83,7 @@ export function StockRowClient({ stock, stocks }: { stock: any, stocks: any[] })
           <input type="hidden" name="est_externe" value="false" />
           
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Nom du stock / boutique</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Nom du magasin / boutique</label>
             <input type="text" name="nom" defaultValue={stock.nom} required className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" />
           </div>
           
@@ -93,9 +93,9 @@ export function StockRowClient({ stock, stocks }: { stock: any, stocks: any[] })
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-1">Stock Parent (Hiérarchie)</label>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Magasin Parent (Hiérarchie)</label>
             <select name="stock_parent_id" defaultValue={stock.stock_parent_id || ""} className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white outline-none">
-              <option value="">-- C'est un stock principal --</option>
+              <option value="">-- C'est un magasin principal --</option>
               {stocks.filter(s => s.id !== stock.id).map(s => <option key={s.id} value={s.id}>{s.nom}</option>)}
             </select>
           </div>
@@ -110,7 +110,7 @@ export function StockRowClient({ stock, stocks }: { stock: any, stocks: any[] })
       <ConfirmDeleteModal 
         isOpen={isDeleteModalOpen} 
         onClose={() => setIsDeleteModalOpen(false)}
-        title="Supprimer le stock"
+        title="Supprimer le magasin"
         description={`Êtes-vous sûr de vouloir supprimer "${stock.nom}" ? Cette action est irréversible.`}
         onConfirm={async () => {
           await deleteStock(stock.id);

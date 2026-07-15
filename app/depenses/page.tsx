@@ -8,6 +8,7 @@ import { formatNumber } from "@/lib/format";
 export default async function DepensesPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  if (session.role === "SUPER_ADMIN") redirect("/super-admin");
 
   const depenses = await prisma.depense.findMany({
     where: { 

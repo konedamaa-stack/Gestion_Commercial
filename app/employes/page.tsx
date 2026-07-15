@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 export default async function EmployesPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  if (session.role === "SUPER_ADMIN") redirect("/super-admin");
   if (session.role === "VENDEUR") redirect("/");
 
   const employes = await prisma.utilisateur.findMany({

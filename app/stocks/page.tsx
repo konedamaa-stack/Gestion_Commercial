@@ -10,6 +10,7 @@ import Link from "next/link";
 export default async function StocksPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  if (session.role === "SUPER_ADMIN") redirect("/super-admin");
   if (session.role === "VENDEUR") redirect("/");
 
   // Récupérer uniquement les stocks internes (est_externe = false)
@@ -35,7 +36,7 @@ export default async function StocksPage() {
         <div>
           <h1 className="text-3xl font-bold text-slate-900 flex items-center gap-3">
             <Warehouse className="h-8 w-8 text-blue-600" />
-            Gestion des Stocks
+            Gestion des Magasins
           </h1>
           <p className="mt-2 text-slate-500">
             Gérez vos entrepôts principaux et vos boutiques secondaires (Hub & Spoke).
@@ -55,7 +56,7 @@ export default async function StocksPage() {
             <thead className="bg-slate-50">
               <tr>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                  Nom du Stock
+                  Nom du Magasin
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                   Hiérarchie
@@ -69,7 +70,7 @@ export default async function StocksPage() {
               {stocks.length === 0 ? (
                 <tr>
                   <td colSpan={3} className="px-6 py-12 text-center text-slate-500">
-                    Aucun stock interne trouvé.
+                    Aucun magasin trouvé.
                   </td>
                 </tr>
               ) : (

@@ -10,6 +10,7 @@ import { redirect } from "next/navigation";
 export default async function ProduitsPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  if (session.role === "SUPER_ADMIN") redirect("/super-admin");
   const userRole = session.role;
 
   // Récupérer les produits depuis la base de données SQLite via Prisma
