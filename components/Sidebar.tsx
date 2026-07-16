@@ -18,7 +18,7 @@ import {
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "Guide d'Utilisation", href: "/guide", icon: BookOpen },
+  { name: "Guide de démarrage", href: "/guide", icon: BookOpen },
   { name: "Ventes & Factures", href: "/ventes", icon: Receipt },
   { name: "Mouvements", href: "/mouvements", icon: ArrowRightLeft },
   { name: "Inventaire & Rapports", href: "/dashboard/inventaire", icon: LayoutDashboard },
@@ -52,6 +52,19 @@ export function Sidebar({ user }: { user: SessionData | null }) {
         {navigation.map((item) => {
           if (user.role === "VENDEUR" && ["/stocks", "/fournisseurs", "/employes", "/dashboard/inventaire"].includes(item.href)) {
             return null;
+          }
+
+          if (item.href === "/guide") {
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="group flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-bold transition-all duration-300 relative overflow-hidden bg-emerald-600 text-white shadow-md hover:bg-emerald-500 hover:shadow-emerald-500/20 border border-emerald-500/30 mb-4 mt-2"
+              >
+                <span className="mr-2 text-base relative z-10">🚀</span>
+                <span className="relative z-10">{item.name}</span>
+              </Link>
+            );
           }
 
           const isActive = pathname === item.href;
