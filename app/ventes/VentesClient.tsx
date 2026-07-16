@@ -187,14 +187,20 @@ export function VentesClient({ produits, stocks, clients, userRole, inventaire }
                     className="w-full px-3 py-3 bg-white border-2 border-blue-200 rounded-xl outline-none focus:border-blue-500 text-blue-900 shadow-sm"
                   >
                     <option value="" disabled>Rechercher ou scanner un produit...</option>
-                    {produits.map((p:any) => {
-                      const stockDispo = (inventaire && inventaire[stockSource] && inventaire[stockSource][p.id]) || 0;
-                      return (
-                        <option key={p.id} value={p.id}>
-                          {p.nom} - {typeVente === "GROS" ? formatNumber(p.prix_vente_gros) : formatNumber(p.prix_vente_detail)} F (Stock dispo: {stockDispo})
-                        </option>
-                      );
-                    })}
+                    {produits
+                      .filter((p: any) => {
+                        const stockDispo = (inventaire && inventaire[stockSource] && inventaire[stockSource][p.id]) || 0;
+                        return stockDispo > 0;
+                      })
+                      .map((p: any) => {
+                        const stockDispo = (inventaire && inventaire[stockSource] && inventaire[stockSource][p.id]) || 0;
+                        return (
+                          <option key={p.id} value={p.id}>
+                            {p.nom} - {typeVente === "GROS" ? formatNumber(p.prix_vente_gros) : formatNumber(p.prix_vente_detail)} F (Stock dispo: {stockDispo})
+                          </option>
+                        );
+                      })
+                    }
                   </select>
                 </div>
               </div>
