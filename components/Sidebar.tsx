@@ -12,11 +12,13 @@ import {
   ArrowRightLeft,
   Receipt,
   Wallet,
-  HandCoins
+  HandCoins,
+  BookOpen
 } from "lucide-react";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
+  { name: "Guide d'Utilisation", href: "/guide", icon: BookOpen },
   { name: "Ventes & Factures", href: "/ventes", icon: Receipt },
   { name: "Mouvements", href: "/mouvements", icon: ArrowRightLeft },
   { name: "Inventaire & Rapports", href: "/dashboard/inventaire", icon: LayoutDashboard },
